@@ -34,8 +34,14 @@ The top-level `qrf` object sets the QRF discount and minimum cost.
 | `bloc` | Cold Harbor bloc or Hongbin bloc. Used to group the faction buttons |
 | `allies` | Factions that can field alongside this one. A force is one faction plus at most one ally |
 | `note` | Optional restriction shown to the player |
+| `emblem` | Square image in `assets/factions/`, about 192 px |
+| `tagline`, `lore` | Shown on the Factions page |
 
 The top-level `incompatible` list holds faction pairs that can never be in one force, such as `["spear", "aayari"]`. It overrides `allies`.
+
+## Quick reference (`data/reference.js`)
+
+Sections of rules, each `{ id, title, kicker, lead, number, items: [{ term, text }] }`. `number` marks the three phases. The same file holds the war summary, the bloc layout and the hard restriction shown on the Factions page.
 
 ## Units (`units`)
 

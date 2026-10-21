@@ -1,0 +1,1994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BPRE Roster</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Unofficial team builder for Black Powder Red Earth 28mm. Pick a game type and points, choose a faction, build a team and select Intervention and Fires cards.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Stencil+One&display=swap">
+<style>
+/* Layout: builder steps on the left, sticky force sheet on the right; stacks to one column on phones. */
+:root {
+  --bg: #e4e3db;
+  --surface: #f4f3ee;
+  --surface-2: #ebeae3;
+  --ink: #1c1e1a;
+  --muted: #5d6157;
+  --line: #c6c4b8;
+  --accent: #a3361f;
+  --accent-ink: #ffffff;
+  --accent-soft: #f0d9d2;
+  --ok: #2e6a3a;
+  --warn: #8a5d00;
+  --bad: #a3261f;
+
+  --font-display: "Saira Stencil One", "Impact", "Arial Narrow", sans-serif;
+  --font-head: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --r: 4px;
+  --gutter: 16px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141613;
+    --surface: #1d201b;
+    --surface-2: #252922;
+    --ink: #e7e6dd;
+    --muted: #a0a397;
+    --line: #363a32;
+    --accent: #d9643f;
+    --accent-ink: #160c08;
+    --accent-soft: #3a2219;
+    --ok: #74c083;
+    --warn: #e0b24a;
+    --bad: #ef6b5f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141613;
+  --surface: #1d201b;
+  --surface-2: #252922;
+  --ink: #e7e6dd;
+  --muted: #a0a397;
+  --line: #363a32;
+  --accent: #d9643f;
+  --accent-ink: #160c08;
+  --accent-soft: #3a2219;
+  --ok: #74c083;
+  --warn: #e0b24a;
+  --bad: #ef6b5f;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--font-body);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--surface);
+}
+[hidden] { display: none !important; }
+button, input, textarea { font: inherit; color: inherit; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.label { font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: var(--muted); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Top bar */
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner, .saved-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-block: 10px;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+.topbar-inner { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 8px; }
+.wordmark { font-family: var(--font-display); font-size: 28px; line-height: 1; color: var(--accent); letter-spacing: .02em; }
+.brand-sub { font-family: var(--font-head); font-weight: 700; text-transform: uppercase; letter-spacing: .18em; font-size: 14px; }
+.name-field { flex: 1 1 220px; min-width: 0; }
+.name-field input {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: var(--r);
+  padding: 7px 10px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: .02em;
+}
+.top-actions { display: flex; gap: 8px; }
+
+.saved-panel { border-top: 1px solid var(--line); background: var(--surface-2); }
+.panel-title { font-family: var(--font-head); font-size: 16px; text-transform: uppercase; letter-spacing: .08em; margin: 4px 0 8px; }
+.saved-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.saved-list li { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.saved-list .saved-name { font-weight: 600; flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+.saved-list .saved-meta { color: var(--muted); font-size: 13px; }
+.saved-empty { color: var(--muted); }
+
+/* Buttons and chips */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--r);
+  padding: 7px 12px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.danger { color: var(--bad); border-color: var(--bad); }
+.count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  cursor: pointer;
+}
+.chip[aria-checked="true"], .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* Layout */
+.layout {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-block: 20px 40px;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+.builder { display: grid; gap: 28px; min-width: 0; }
+
+.step-title {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 12px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  text-wrap: balance;
+}
+.step-num {
+  font-family: var(--font-display);
+  font-size: 22px;
+  width: 34px; height: 34px;
+  display: inline-grid; place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: var(--r);
+  flex: none;
+}
+
+/* Mode cards */
+.mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mode-card, .faction-card {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.mode-card:hover, .faction-card:hover:not([disabled]) { border-color: var(--ink); }
+.mode-card[aria-checked="true"], .faction-card[aria-checked="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+.mode-name, .faction-name { font-family: var(--font-head); font-weight: 700; font-size: 19px; text-transform: uppercase; letter-spacing: .04em; line-height: 1.15; }
+.mode-blurb, .faction-sub { color: var(--muted); font-size: 13px; }
+.mode-sets { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+.points-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.custom-points { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; font-size: 13px; color: var(--muted); }
+.custom-points input { width: 90px; padding: 4px 8px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); font-family: var(--font-mono); color: var(--ink); }
+
+/* Faction cards */
+.faction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.faction-side { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.faction-card[disabled] { opacity: .45; cursor: not-allowed; }
+.faction-card .why { font-size: 12px; color: var(--muted); }
+
+/* Units */
+.data-note { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: var(--r); color: var(--muted); font-size: 14px; max-width: 70ch; }
+.data-note a { color: inherit; }
+.unit-list { display: grid; gap: 18px; }
+.unit-group h3 { margin: 0 0 6px; font-family: var(--font-head); font-size: 14px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.unit-rows { display: grid; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.unit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 10px 12px;
+}
+.unit-row + .unit-row { border-top: 1px solid var(--line); }
+.unit-row.in-team { background: var(--surface-2); }
+.unit-main { min-width: 0; }
+.unit-name { font-weight: 600; }
+.unit-notes { color: var(--muted); font-size: 13px; }
+.unit-rule { color: var(--warn); font-size: 12px; font-family: var(--font-mono); }
+.unit-cost { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; min-width: 60px; }
+.tbc { color: var(--muted); }
+.unverified { text-decoration: underline dotted var(--muted); text-underline-offset: 3px; cursor: help; }
+.badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; margin-left: 6px; color: var(--muted); vertical-align: 2px; white-space: nowrap; }
+.badge.ally { border-style: dashed; }
+
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--bg); }
+.stepper button { width: 34px; height: 34px; border: 0; background: transparent; cursor: pointer; font-family: var(--font-mono); font-size: 18px; line-height: 1; }
+.stepper button:hover:not([disabled]) { background: var(--surface-2); }
+.stepper button[disabled] { opacity: .35; cursor: not-allowed; }
+.stepper .qty { min-width: 28px; text-align: center; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.empty { padding: 18px; border: 1px dashed var(--line); border-radius: var(--r); color: var(--muted); }
+
+/* Cards */
+.card-controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; margin-bottom: 10px; }
+.tabs { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.tab { border: 0; background: var(--surface); padding: 7px 14px; cursor: pointer; font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 15px; }
+.tab + .tab { border-left: 1px solid var(--line); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.tab[aria-selected="true"] .count { color: var(--bg); }
+.set-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hint { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.game-card {
+  position: relative;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 12px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 112px;
+}
+.game-card.picked { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.game-card .card-type { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; }
+.game-card .card-name { font-family: var(--font-head); font-weight: 700; font-size: 18px; line-height: 1.15; text-transform: uppercase; letter-spacing: .03em; }
+.game-card .card-notes { font-size: 13px; color: var(--muted); }
+.game-card .card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 8px; }
+.pick-btn { border: 1px solid var(--line); background: var(--bg); border-radius: var(--r); padding: 4px 10px; font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; cursor: pointer; }
+.game-card.picked .pick-btn { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.pick-btn[disabled] { opacity: .4; cursor: not-allowed; }
+
+/* Summary sheet */
+.summary { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); min-width: 0; }
+.sheet {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+.sheet-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+.sheet-kicker { font-family: var(--font-head); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 13px; }
+.dtg { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.sheet-title { margin: 0; font-family: var(--font-head); font-size: 24px; line-height: 1.1; text-transform: uppercase; letter-spacing: .03em; overflow-wrap: anywhere; text-wrap: balance; }
+.sheet-meta { margin: 0; color: var(--muted); font-size: 14px; }
+.meter { display: grid; gap: 6px; }
+.meter-nums { display: flex; align-items: baseline; gap: 6px; }
+.meter-nums .big { font-size: 32px; font-weight: 600; line-height: 1; }
+.meter-track { height: 8px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.meter-fill { height: 100%; width: 0; background: var(--ok); transition: width .2s ease; }
+.meter.over .meter-fill { background: var(--bad); }
+.meter.over .big { color: var(--bad); }
+.meter-sub { font-size: 13px; color: var(--muted); }
+.issues { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.issue { font-size: 13px; padding: 6px 8px 6px 10px; border-radius: var(--r); border-left: 3px solid; background: var(--surface-2); }
+.issue.error { border-color: var(--bad); }
+.issue.warn { border-color: var(--warn); }
+.issue.info { border-color: var(--line); color: var(--muted); }
+.sheet-h { margin: 6px 0 0; font-family: var(--font-head); font-size: 14px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.sheet-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.sheet-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 6px; font-size: 14px; }
+.sheet-list .q { font-family: var(--font-mono); color: var(--muted); }
+.sheet-list .n { overflow-wrap: anywhere; }
+.sheet-list .p { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.sheet-list .none { color: var(--muted); grid-column: 1 / -1; }
+.sheet-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; border-top: 1px solid var(--line); }
+.sheet-actions .btn { font-size: 13px; padding: 6px 10px; }
+.import-box { display: grid; gap: 6px; }
+.import-box textarea { width: 100%; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); padding: 8px; font-family: var(--font-mono); font-size: 12px; resize: vertical; }
+.import-actions { display: flex; gap: 6px; }
+
+/* Mobile bar */
+.mobile-bar { display: none; }
+
+/* Footer */
+.footer {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-block: 0 80px;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+  color: var(--muted);
+  font-size: 12px;
+}
+.footer p { max-width: 75ch; margin: 0 0 6px; }
+.footer a { color: inherit; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex; align-items: center; gap: 12px;
+  background: var(--ink); color: var(--bg);
+  padding: 10px 14px;
+  border-radius: var(--r);
+  font-size: 14px;
+  max-width: calc(100% - 32px);
+  box-shadow: 0 6px 20px rgb(0 0 0 / .25);
+}
+.toast-btn { border: 1px solid var(--bg); background: transparent; color: var(--bg); border-radius: var(--r); padding: 2px 10px; cursor: pointer; font-family: var(--font-head); font-weight: 600; text-transform: uppercase; }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .summary { position: static; }
+  .mobile-bar {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+    padding-block: 10px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+    border: 0; border-top: 1px solid var(--line);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .mobile-bar.over { color: var(--bad); }
+  .toast { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 640px) {
+  .mode-grid { grid-template-columns: minmax(0, 1fr); }
+  .unit-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .unit-row .stepper, .unit-row .add-btn { grid-column: 2; grid-row: 1 / span 2; }
+  .unit-row .unit-cost { grid-column: 1; grid-row: 2; text-align: left; }
+  .top-actions { width: 100%; }
+  .top-actions .btn { flex: 1; }
+  .wordmark { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .meter-fill { transition: none; }
+}
+
+/* Print: the force sheet only */
+@media print {
+  :root { --bg: #fff; --surface: #fff; --surface-2: #f2f2f2; --ink: #000; --muted: #444; --line: #999; }
+  body { background: #fff; }
+  body::before, .topbar, .builder, .footer, .toast, .no-print, .mobile-bar { display: none !important; }
+  .layout { display: block; padding: 0; }
+  .summary { position: static; }
+  .sheet { border: 0; padding: 0; }
+  .issue.info { display: none; }
+}
+
+/* v0.2: presets, deployments, blocs, upgrades */
+.points-block { display: grid; gap: 6px; margin-top: 14px; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.preset {
+  display: grid; gap: 2px; text-align: left;
+  border: 1px solid var(--line); background: var(--surface); border-radius: var(--r);
+  padding: 6px 12px; cursor: pointer; max-width: 260px;
+}
+.preset:hover { border-color: var(--ink); }
+.preset[aria-checked="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.preset-pts { font-size: 15px; font-weight: 600; }
+.preset-label { font-size: 12px; opacity: .8; line-height: 1.3; }
+.extras { display: grid; gap: 6px; margin-top: 12px; max-width: 70ch; }
+.toggle, .fixed-dep { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--muted); padding: 8px 10px; border: 1px dashed var(--line); border-radius: var(--r); }
+.toggle { cursor: pointer; }
+.toggle input { margin-top: 3px; accent-color: var(--accent); }
+.toggle b, .fixed-dep b { color: var(--ink); font-weight: 600; }
+.fixed-dep .mono { color: var(--ink); }
+.total-line { font-size: 14px; font-weight: 600; padding-left: 2px; }
+
+.faction-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.bloc { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.bloc-name { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.bloc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.ally-block { display: grid; gap: 6px; margin-top: 14px; }
+.ally-block .hint { margin: 0; }
+
+.dep-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.dep-tab { display: grid; gap: 0; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 6px 12px; cursor: pointer; }
+.dep-tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.dep-tab.over .dep-pts { color: var(--bad); }
+.dep-tab[aria-selected="true"].over .dep-pts { color: var(--accent-soft); }
+.dep-name { font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; font-size: 15px; }
+.dep-pts { font-size: 12px; }
+
+.unit-cost .was { margin-left: 6px; text-decoration: line-through; color: var(--muted); font-size: 12px; }
+.unit-opts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 18px; padding-top: 6px; border-top: 1px dashed var(--line); }
+.opt { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.opt-name { cursor: help; }
+.stepper.small button { width: 28px; height: 26px; font-size: 15px; }
+.stepper.small .qty { min-width: 22px; font-size: 13px; }
+
+.budgets { display: grid; gap: 10px; }
+.meter.minor .big { font-size: 20px; }
+.meter-name { font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; font-size: 13px; color: var(--muted); }
+.meter-left { margin-left: auto; font-size: 13px; color: var(--muted); }
+.meter.over .meter-left { color: var(--bad); }
+.sheet-list .sub { display: block; font-size: 12px; color: var(--muted); }
+.granted { font-size: 12px; color: var(--muted); text-align: right; }
+.game-card.granted-card { border-style: dashed; }
+
+/* Touch and phone tuning */
+@media (pointer: coarse) {
+  .stepper button { width: 44px; height: 44px; }
+  .stepper.small button { width: 38px; height: 36px; }
+  .pick-btn { min-height: 40px; padding: 6px 14px; }
+  .chip { padding: 8px 14px; }
+  .btn { min-height: 40px; }
+  .toggle input { width: 20px; height: 20px; }
+}
+.slot-btns { display: flex; gap: 6px; }
+.pick-btn.swap { border-style: dashed; }
+@media (max-width: 640px) {
+  .topbar { position: static; }
+  body::before { display: none; }
+  .layout { padding-block: 14px 24px; gap: 18px; }
+  .builder { gap: 24px; }
+  .step-title { font-size: 20px; }
+  .custom-points input, .import-box textarea, .name-field input { font-size: 16px; }
+  .custom-points input { height: 40px; }
+  .stepper button { width: 42px; height: 42px; }
+  .stepper.small button { width: 38px; height: 36px; }
+  .pick-btn { min-height: 38px; }
+  .chip { min-height: 38px; }
+  .btn { min-height: 40px; }
+  .presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .preset { max-width: none; }
+  .faction-grid { grid-template-columns: minmax(0, 1fr); }
+  .bloc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dep-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -4px; padding-inline: 4px; }
+  .dep-tab { flex: none; }
+  .card-controls { align-items: stretch; }
+  .tabs { width: 100%; }
+  .tab { flex: 1; }
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .game-card { padding: 10px; min-height: 0; }
+  .game-card .card-name { font-size: 16px; }
+  .game-card .card-foot { flex-wrap: wrap; }
+  .summary { scroll-margin-top: 8px; }
+  .sheet-actions .btn { flex: 1 1 calc(50% - 6px); }
+  .footer { padding-block-end: calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 360px) {
+  .card-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Theme switch */
+.theme-btn { min-width: 44px; padding-inline: 10px; }
+.theme-btn svg { width: 18px; height: 18px; display: block; }
+
+/* Card effect text */
+.card-text { display: grid; gap: 6px; }
+.text-toggle {
+  display: inline-flex; align-items: center; gap: 6px; justify-self: start;
+  border: 0; background: none; padding: 4px 0; cursor: pointer;
+  font-family: var(--font-head); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent);
+}
+.text-toggle svg { width: 12px; height: 12px; transition: transform .15s ease; }
+.text-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.text-toggle:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.text-body p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+.text-body { padding: 8px 10px; background: var(--surface-2); border-radius: var(--r); border-left: 3px solid var(--accent); }
+.hint-row { display: flex; gap: 10px 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.hint-row .hint { margin: 0; max-width: 75ch; }
+.small-btn { font-size: 13px; padding: 5px 10px; flex: none; }
+@media (max-width: 640px) {
+  .text-toggle { min-height: 36px; font-size: 14px; }
+  .text-body p { font-size: 14px; }
+  .hint-row { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) { .text-toggle svg { transition: none; } }
+@media print { .text-toggle, .text-body { display: none !important; } }
+@media (max-width: 640px) { .game-card.text-open { grid-column: 1 / -1; } }
+
+</style>
+<script>
+  // Apply a saved theme before first paint so the page doesn't flash.
+  try { var t = localStorage.getItem('bpre-roster:theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="wordmark">BPRE</span>
+      <span class="brand-sub">Roster</span>
+    </div>
+    <label class="name-field" for="roster-name">
+      <span class="sr-only">Roster name</span>
+      <input id="roster-name" type="text" maxlength="60" placeholder="Name this roster" autocomplete="off">
+    </label>
+    <div class="top-actions">
+      <button type="button" class="btn" data-action="new-roster">New</button>
+      <button type="button" class="btn" data-action="save-roster">Save</button>
+      <button type="button" class="btn" data-action="toggle-saved" aria-expanded="false" aria-controls="saved-panel">Saved <span id="saved-count" class="count"></span></button>
+      <button type="button" class="btn theme-btn" data-action="cycle-theme" id="theme-btn" aria-label="Theme: match device" title="Theme: match device"></button>
+    </div>
+  </div>
+  <div id="saved-panel" class="saved-panel" hidden>
+    <div class="saved-inner">
+      <h2 class="panel-title">Saved rosters</h2>
+      <ul id="saved-list" class="saved-list"></ul>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <div class="builder">
+    <section class="step" id="step-mode" aria-labelledby="h-mode">
+      <h2 class="step-title" id="h-mode"><span class="step-num">1</span>Game type and points</h2>
+      <div id="mode-options" class="mode-grid" role="radiogroup" aria-label="Game type"></div>
+      <div class="points-block">
+        <span class="label" id="points-label">Kill team CP</span>
+        <div class="points-row">
+          <div id="points-options" class="presets" role="radiogroup" aria-labelledby="points-label"></div>
+          <label class="custom-points" for="custom-points">
+            <span>Custom</span>
+            <input id="custom-points" type="number" min="5" max="2000" step="5" inputmode="numeric">
+          </label>
+        </div>
+      </div>
+      <div id="extras" class="extras"></div>
+    </section>
+
+    <section class="step" id="step-faction" aria-labelledby="h-faction">
+      <h2 class="step-title" id="h-faction"><span class="step-num">2</span>Faction</h2>
+      <div id="faction-options" class="faction-grid" role="radiogroup" aria-label="Faction"></div>
+      <div id="ally-block" class="ally-block" hidden>
+        <span class="label">Allied faction</span>
+        <div id="ally-options" class="chips" role="radiogroup" aria-label="Allied faction"></div>
+        <p id="ally-note" class="hint"></p>
+      </div>
+    </section>
+
+    <section class="step" id="step-team" aria-labelledby="h-team">
+      <h2 class="step-title" id="h-team"><span class="step-num">3</span>Team</h2>
+      <div id="dep-tabs" class="dep-tabs" role="tablist" aria-label="Deployment"></div>
+      <p id="dep-note" class="hint"></p>
+      <div id="unit-list" class="unit-list"></div>
+    </section>
+
+    <section class="step" id="step-cards" aria-labelledby="h-cards">
+      <h2 class="step-title" id="h-cards"><span class="step-num">4</span>Cards</h2>
+      <div class="card-controls">
+        <div class="tabs" role="tablist" aria-label="Card type">
+          <button type="button" role="tab" class="tab" id="tab-intervention" data-action="card-tab" data-id="intervention">Intervention <span class="count" id="count-intervention"></span></button>
+          <button type="button" role="tab" class="tab" id="tab-special" data-action="card-tab" data-id="special">Special <span class="count" id="count-special"></span></button>
+          <button type="button" role="tab" class="tab" id="tab-fires" data-action="card-tab" data-id="fires">Fires <span class="count" id="count-fires"></span></button>
+        </div>
+        <div class="set-filter">
+          <span class="label">From</span>
+          <div id="set-filter" class="chips"></div>
+        </div>
+      </div>
+      <div class="hint-row">
+        <p id="card-hint" class="hint"></p>
+        <button type="button" class="btn small-btn" id="expand-all" data-action="expand-all">Expand all</button>
+      </div>
+      <div id="card-list" class="card-grid"></div>
+    </section>
+  </div>
+
+  <aside class="summary" id="summary" aria-labelledby="h-summary">
+    <div class="sheet">
+      <div class="sheet-head">
+        <span class="sheet-kicker">Force tasking</span>
+        <span class="dtg" id="dtg"></span>
+      </div>
+      <h2 class="sheet-title" id="h-summary">Untitled roster</h2>
+      <p class="sheet-meta" id="sheet-meta"></p>
+
+      <div id="budgets" class="budgets"></div>
+
+      <ul class="issues" id="issues"></ul>
+
+      <div id="sheet-units"></div>
+
+      <h3 class="sheet-h">Intervention</h3>
+      <ul class="sheet-list" id="sheet-intervention"></ul>
+
+      <div id="sheet-special-wrap" hidden>
+        <h3 class="sheet-h">Special Intervention</h3>
+        <ul class="sheet-list" id="sheet-special"></ul>
+      </div>
+
+      <h3 class="sheet-h">Fires</h3>
+      <ul class="sheet-list" id="sheet-fires"></ul>
+
+      <div class="sheet-actions no-print">
+        <button type="button" class="btn" data-action="copy-text">Copy as text</button>
+        <button type="button" class="btn" data-action="copy-code">Copy roster code</button>
+        <button type="button" class="btn" data-action="toggle-import">Paste code</button>
+        <button type="button" class="btn" data-action="share-link" data-standalone>Copy share link</button>
+        <button type="button" class="btn" data-action="export-json" data-standalone>Export file</button>
+        <label class="btn" for="import-file" data-standalone>Import file<input id="import-file" type="file" accept="application/json,.json" class="sr-only"></label>
+        <button type="button" class="btn" data-action="print" data-standalone>Print</button>
+      </div>
+      <div class="import-box no-print" id="import-box" hidden>
+        <label for="import-code" class="label">Paste a roster code</label>
+        <textarea id="import-code" rows="3" spellcheck="false" placeholder="BPRE1.eyJ2Ijo..."></textarea>
+        <div class="import-actions">
+          <button type="button" class="btn primary" data-action="load-code">Load roster</button>
+          <button type="button" class="btn" data-action="toggle-import">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<button type="button" class="mobile-bar no-print" data-action="jump-summary" id="mobile-bar">
+  <span class="mono"><span id="mb-used">0</span> / <span id="mb-limit">0</span> CP</span>
+  <span id="mb-status"></span>
+</button>
+
+<footer class="footer">
+  <p>Community tool for the Black Powder Red Earth Patreon, made with permission from Echelon Software. Black Powder Red Earth and all related names belong to Echelon Software. You need the rulebooks to play.</p>
+  <p id="footer-links"></p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-msg"></span>
+  <button type="button" class="toast-btn" id="toast-undo" data-action="undo" hidden>Undo</button>
+</div>
+
+<script>
+/*
+ * BPRE Roster game data.
+ *
+ * This is the only file you need to edit to add units, fix points or add cards.
+ * See CONTRIBUTING.md for the field reference. Run `node tools/validate-data.mjs`
+ * after editing to catch typos and broken references.
+ *
+ * Sources: Core Rules (Unforgiving Close Combat) unit and card pages 68-81,
+ * Phase Line Expansion pages 30-42, Spearhead Expansion pages 70-77, and the
+ * rules quick reference.
+ *
+ * Keep card and unit text to names and short summaries. Do not paste full
+ * rules text from the books or cards into this file.
+ */
+window.BPRE_DATA = {
+  version: "0.4.0",
+  pointsLabel: "CP",
+  // Set this to your GitHub repo URL so the app can link to issues.
+  repoUrl: null,
+
+  sets: [
+    { id: "core", name: "Core Set", short: "Core" },
+    { id: "phaseline", name: "Phase Line", short: "PL" },
+    { id: "spearhead", name: "Spearhead", short: "SH" }
+  ],
+
+  // Game types.
+  //   presets:      points limits offered for the main kill team, with the taskings that use them
+  //   unitSets:     which sets' units can be taken
+  //   deployments:  extra CP pools on top of the main kill team
+  //   fireSlots:    Phase Line Fires placements (one card per slot); optional ones get a toggle
+  //   deployments:  reserve: true skips the 1-per-100 and ratio limits; allowedUnits limits what it can hold
+  //   qrf:          false where the Quick Reaction Force is not allowed
+  //   interventionLimit: size of the Intervention hand (unique cards)
+  modes: [
+    {
+      id: "core",
+      name: "Core Set",
+      blurb: "Night Raids from the core rulebook. Turn limit 7.",
+      presets: [
+        { points: 150, label: "Standard taskings" },
+        { points: 180, label: "Carcass Wraith, defender" },
+        { points: 200, label: "Carcass Wraith, assaulter" }
+      ],
+      defaultPoints: 150,
+      unitSets: ["core"],
+      deployments: [],
+      interventionLimit: 3,
+      verified: true
+    },
+    {
+      id: "phaseline",
+      name: "Phase Line",
+      blurb: "Multi-storey close combat. Reinforcements arrive as each phase line falls. Turn limit 14.",
+      presets: [
+        { points: 200, label: "Initial deployment" }
+      ],
+      defaultPoints: 200,
+      unitSets: ["core", "phaseline"],
+      deployments: [
+        { id: "pl1", name: "Phase Line 1", points: 150, note: "Deploys when Phase Line 1 is breached." },
+        { id: "pl2", name: "Phase Line 2", points: 150, note: "Deploys when Phase Line 2 is breached." }
+      ],
+      // Each player places one Phase Line Fires card face down at each phase line.
+      fireSlots: [
+        { id: "pl1", name: "Phase Line 1", short: "PL 1" },
+        { id: "pl2", name: "Phase Line 2", short: "PL 2" }
+      ],
+      qrf: false,
+      interventionLimit: 3,
+      verified: true
+    },
+    {
+      id: "spearhead",
+      name: "Spearhead",
+      blurb: "Final phase of the Awbari Civil War, with Nitto and SPEAR. Turn limit 10.",
+      presets: [
+        { points: 200, label: "Combat Patrol" },
+        { points: 350, label: "Fighting Position, Command Net, Forward Observer Post, ESM Site" }
+      ],
+      defaultPoints: 350,
+      unitSets: ["core", "phaseline", "spearhead"],
+      deployments: [
+        {
+          id: "reserve", name: "Specialist Reserve", points: 350, optional: true, reserve: true,
+          note: "Campaign only. Specialist classes bought at the start of a Spearhead campaign; losses come off the Record Sheet.",
+          allowedUnits: ["cts-advisor", "cts-auto-rifleman-hvy", "cts-assault-grenadier", "cts-assault-tech", "nitto-sysop", "aa-shurta-pkm", "hb-enabler", "hb-merc-grenadier", "hb-pkm-gunner", "spear-sysop", "spear-marksman"]
+        }
+      ],
+      fireSlots: [
+        { id: "fop", name: "Held Phase Line Fires", short: "Hold", optional: true, note: "Forward Observer Post tasking: each player holds one Phase Line Fires card." }
+      ],
+      interventionLimit: 3,
+      verified: true
+    }
+  ],
+
+  // Quick Reaction Force (core rules): the defending player can set aside part
+  // of the kill team's CP. QRF units cost 5 CP less, to a minimum of 5.
+  qrf: { discount: 5, minimum: 5 },
+
+  // Factions. allies: factions that can field alongside this one.
+  // A force is one faction plus at most one ally.
+  factions: [
+    { id: "cts", name: "Crisis Troop Scorch", subtitle: "Cold Harbor contractors", bloc: "Cold Harbor bloc", allies: ["nitto"] },
+    { id: "nitto", name: "00 Unit Nitto", subtitle: "Awbari Border Protection", bloc: "Cold Harbor bloc", allies: ["cts"] },
+    { id: "hongbin", name: "Hongbin", subtitle: "Kinetic Forces / Alloy Security", bloc: "Hongbin bloc", allies: ["aayari", "spear"] },
+    { id: "aayari", name: "Aayari Network", subtitle: "The Aayar Guard", bloc: "Hongbin bloc", allies: ["hongbin"] },
+    { id: "spear", name: "SPEAR Brigade", subtitle: "Qasran special mission unit", bloc: "Hongbin bloc", allies: ["hongbin"], note: "SPEAR and the Aayari Network never share a battlespace. If one earns reinforcements, the other can only come on once the first is wiped out." }
+  ],
+
+  // Units.
+  //   cost:      Capability Value in CP
+  //   move:      movement range in inches
+  //   perPoints: at most one per this many CP of warfighting units in the same deployment
+  //   fires:     Fires cards the unit adds to the hand when first positioned
+  //   options:   ids from `options` below that this unit can take
+  units: [
+    // Crisis Troop Scorch
+    { id: "cts-advisor", faction: "cts", set: "core", name: "Operational Advisor", cost: 50, move: 6, perPoints: 100, fires: [{ card: "fires-scoria-rs", count: 1 }], options: ["respirator"], notes: "Kinetic ISR, Glint, Frag." },
+    { id: "cts-assaulter", faction: "cts", set: "core", name: "Assaulter", cost: 20, move: 6, options: ["respirator"], notes: "Frag." },
+    { id: "cts-auto-rifleman", faction: "cts", set: "core", name: "Automatic Rifleman", cost: 40, move: 6, perPoints: 100, options: ["respirator"], notes: "LAMG, Bipod." },
+    { id: "cts-recce", faction: "cts", set: "core", name: "Recce", cost: 30, move: 8, options: ["respirator"], notes: "Doorkicker, Initiative, Pointman." },
+    { id: "cts-recce-raider", faction: "cts", set: "phaseline", name: "Recce Raider", cost: 30, move: 8, options: ["forward-deployed", "respirator"], notes: "CQB 5D10. Doorkicker, Initiative, CQB." },
+    { id: "cts-assault-grenadier", faction: "cts", set: "phaseline", name: "Assault Grenadier", cost: 40, move: 6, perPoints: 100, options: ["respirator"], notes: "Grenadier Front." },
+    { id: "cts-auto-rifleman-hvy", faction: "cts", set: "phaseline", name: "Automatic Rifleman HVY", cost: 50, move: 6, perPoints: 100, options: ["respirator"], notes: "Base of Fire, Bipod, Fire for Effect." },
+    { id: "cts-assault-tech", faction: "cts", set: "spearhead", name: "Assault Tech", cost: 60, move: 6, perPoints: 100, fires: [{ card: "fires-scoria-rs", count: 1 }], options: ["respirator"], notes: "Kinetic ISR, Glint, Swarm Controller, Cognitive Jammers." },
+
+    // 00 Unit Nitto
+    { id: "nitto-sysop", faction: "nitto", set: "spearhead", name: "Systems Operator", cost: 50, move: 8, perPoints: 100, fires: [{ card: "fires-quadrotor", count: 2 }], notes: "Quadrotor, Glint, Multiplier, Unflinching." },
+    { id: "nitto-rifleman", faction: "nitto", set: "spearhead", name: "Rifleman", cost: 30, move: 8, notes: "Sustained Fire, Frag, Unflinching." },
+    { id: "nitto-pointman", faction: "nitto", set: "spearhead", name: "Pointman", cost: 30, move: 8, notes: "Doorkicker, Breacher, Unflinching." },
+
+    // Hongbin
+    { id: "hb-enabler", faction: "hongbin", set: "core", name: "Enabler", cost: 40, move: 6, perPoints: 100, fires: [{ card: "fires-fenghuang-918", count: 2 }], options: ["respirator"], notes: "Kinetic ISR, Glint, Frag." },
+    { id: "hb-merc", faction: "hongbin", set: "core", name: "Merc", cost: 20, move: 6, options: ["respirator"], notes: "RPK, Bipod, Frag." },
+    { id: "hb-merc-grenadier", faction: "hongbin", set: "phaseline", name: "Merc Grenadier", cost: 20, move: 6, perPoints: 100, options: ["respirator"], notes: "Grenadier Direct Fire, Frag." },
+    { id: "hb-pkm-gunner", faction: "hongbin", set: "spearhead", name: "PKM Gunner", cost: 65, move: 5, perPoints: 100, options: ["respirator"], notes: "PKM Professional, Bipod, Fire for Effect." },
+
+    // Aayari Network
+    { id: "aa-muhtasib", faction: "aayari", set: "core", name: "Guard Muhtasib", cost: 15, move: 6, notes: "S-Vest, Frag." },
+    { id: "aa-shurta", faction: "aayari", set: "core", name: "Guard Shurta", cost: 5, move: 6, notes: "Non-Professional. No save roll." },
+    { id: "aa-muhtasib-sapper", faction: "aayari", set: "phaseline", name: "Muhtasib Sapper", cost: 25, move: 8, notes: "CQB 5D10. S-Vest, Doorkicker, CQB." },
+    { id: "aa-shurta-pkm", faction: "aayari", set: "phaseline", name: "Shurta PKM Gunner", cost: 45, move: 4, perPoints: 100, notes: "PKM, Bipod, Fire for Effect. No save roll." },
+    { id: "aa-assistant-pkm", faction: "aayari", set: "phaseline", name: "Assistant PKM Gunner", cost: 5, move: 6, notes: "Non-Professional, Crew Served. No save roll." },
+
+    // SPEAR Brigade
+    { id: "spear-sysop", faction: "spear", set: "spearhead", name: "Systems Operator", cost: 50, move: 6, perPoints: 100, fires: [{ card: "fires-quadrotor", count: 2 }], notes: "Quadrotor, Swarm Controller, Cognitive Jammers, Laser Detector. Respirator standard." },
+    { id: "spear-marksman", faction: "spear", set: "spearhead", name: "Marksman", cost: 35, move: 6, notes: "Marksman, Supported Fire, Laser Detector. Respirator standard." },
+    { id: "spear-assaulter", faction: "spear", set: "spearhead", name: "Assaulter", cost: 20, move: 8, notes: "Breacher, Frag, Laser Detector. Respirator standard." }
+  ],
+
+  // Force-wide ratios. Units in `members` together may not exceed `max` for
+  // each unit in `per`.
+  ratios: [
+    {
+      id: "shurta",
+      label: "Every Muhtasib permits four Shurta",
+      members: ["aa-shurta", "aa-shurta-pkm", "aa-assistant-pkm"],
+      per: ["aa-muhtasib", "aa-muhtasib-sapper"],
+      max: 4
+    }
+  ],
+
+  // Paid upgrades a unit can take. modes limits where the option is offered.
+  options: [
+    { id: "respirator", name: "Respirator", cost: 5, modes: ["phaseline", "spearhead"], notes: "+7 on chlorine rolls. Standard for SPEAR; not available to Nitto or Aayari Network." },
+    { id: "forward-deployed", name: "Forward Deployed", cost: 5, modes: ["phaseline"], notes: "Deploy up to 13\" closer to the opponent's edge in Phase Line taskings." }
+  ],
+
+  // Cards. type is "intervention", "special" (Special Intervention) or "fires".
+  //   factions:  card shows that faction's emblem, so only that faction can use it
+  //   granted:   true for Fires cards that only come from units (not picked)
+  //   slot:      true for Phase Line Fires, placed at a phase line
+  //   subtype:   label shown on the card
+  //   text:      what the card does, in our own words (not the printed card text)
+  cards: [
+    // Core Set Fires (granted by units)
+    { id: "fires-scoria-rs", type: "fires", set: "core", name: "Scoria RS", factions: ["cts"], granted: true, notes: "Thermobaric loitering munition, 3\" radius.", text: "Called down with Glint. Explodes with a 3\" radius around the target point or unit. Every unit inside is killed or rolls a save. Single use." },
+    { id: "fires-fenghuang-918", type: "fires", set: "core", name: "FengHuang-918 UAS", factions: ["hongbin"], granted: true, notes: "Single-target loitering munition.", text: "Called down with Glint on a single unit. Roll 2D10. On 7 or less it goes astray: pick one of your own units within 2\" of the target, which is killed or rolls a save (nothing happens if none is there). On 8 or more it hits the target, which saves at +1 if it has a save; a target with no save rolls 2D10 and dies on anything under 18." },
+    // Spearhead Fires (granted by units)
+    { id: "fires-quadrotor", type: "fires", set: "spearhead", name: "Quadrotor", granted: true, notes: "2\" radius.", text: "Called down with Glint or a Swarm Controller. Explodes with a 2\" radius around the target point or unit; every unit inside is killed or rolls a save. Once used, it is gone for the rest of the Night Raid." },
+
+    // Phase Line Fires
+    { id: "plf-sensor-fuzed", type: "fires", set: "phaseline", subtype: "Phase Line Fires", slot: true, name: "Sensor Fuzed Munition", factions: ["cts"], notes: "Two 3\" target points.", text: "Pick two target points. Roll 2D10 for one exterior unit whose base is at least partly within 3\" of them; on 5 or more it dies outright with no save. Then two 2\" explosions land, each scattering up to 3\" from its target point using the Radial Template. Gone for the rest of the Night Raid." },
+    { id: "plf-hesh", type: "fires", set: "phaseline", subtype: "Phase Line Fires", slot: true, name: "HESH Rounds", factions: ["aayari"], notes: "Hits one structure.", text: "Pick one structure. Every unit inside it or within 2\" of it is killed or rolls a save. Survivors on upper storeys drop to the first storey, repositioned by their owner only if they would end up inside a wall. Mark the structure with a face-down Tactical Exploitation token: for the rest of the tasking its inside walls are waist-high cover, its stairwells are impassable full-height walls, and all its doors are destroyed. Gone for the rest of the Night Raid." },
+    { id: "plf-drone-swarm", type: "fires", set: "phaseline", subtype: "Phase Line Fires", slot: true, name: "Drone Swarm", notes: "Two 3\" explosions.", text: "Pick two target points and scatter each with the Radial Template, then resolve two 3\" explosions at each point. Gone for the rest of the Night Raid." },
+    { id: "plf-chlorine", type: "fires", set: "phaseline", subtype: "Phase Line Fires", slot: true, name: "Chlorine Gas", notes: "Chemical exposure for every unit.", text: "Every unit on the battlespace rolls 2D10 for exposure. 2 to 8: the unit dies, no save. 9 to 17: it takes an exposure token (use a face-down ACT chit). 18 or more: no effect. Each exposure token gives -2\" movement and -2 to attack and save rolls, to a minimum of 0. A respirator adds +7 to the exposure roll. Gone for the rest of the Night Raid." },
+    { id: "plf-gps-mortars", type: "fires", set: "phaseline", subtype: "Phase Line Fires", slot: true, name: "GPS-Guided Mortars", notes: "Seven frag tokens.", text: "Place seven Frag tokens on exterior points anywhere on the battlespace, then roll straight away to scatter each one and resolve a 2\" explosion for each. Gone for the rest of the Night Raid." },
+
+    // Core Set Intervention
+    { id: "int-lift-and-shift", type: "intervention", set: "core", name: "Lift and Shift", notes: "Activate a unit that already has an ACT chit.", text: "Use when you pick a unit to activate in the Maneuver Phase. Discard it to activate a unit that already has an ACT chit. That unit can move no more than 4\" and cannot attack this activation." },
+    { id: "int-full-send", type: "intervention", set: "core", name: "Full Send", notes: "Attack again after a miss.", text: "Discard before rolling an attack against an enemy unit. If the attack misses, attack again." },
+    { id: "int-save-last-bullet", type: "intervention", set: "core", name: "Save the Last Bullet", notes: "A killed unit attacks its killer.", text: "Use when one of your units is killed by an enemy unit it has line of sight to. Discard it and the dying unit makes one attack against its killer before it is removed." },
+    { id: "int-kill-not-capture", type: "intervention", set: "core", name: "Kill, Not Capture", notes: "+3 to one attack roll.", text: "Discard before rolling an attack. Add 3 to the result of one attack roll." },
+    { id: "int-hasty-ambush", type: "intervention", set: "core", name: "Hasty Ambush", notes: "+1 to one attack roll.", text: "Discard after attacking with a unit. Add 1 to the result of one of its attack rolls." },
+    { id: "int-break-contact", type: "intervention", set: "core", name: "Break Contact", notes: "+2 to a failed save in obstructed LOS.", text: "Use after one of your units in obstructed line of sight from its attacker fails a save. Discard it to add 2 to the save roll." },
+    { id: "int-bat-country", type: "intervention", set: "core", name: "This Is Bat Country", notes: "Move 3\" in the Finishing Phase.", text: "Use when picking a unit to activate in the Finishing Phase. Discard it to activate a unit that would not otherwise be eligible. The unit cannot attack but can move up to 3\", then loses an ACT chit." },
+    { id: "int-frag-out", type: "intervention", set: "core", name: "Frag Out", notes: "Throw a frag in the Maneuver Phase.", text: "Use when activating a unit with the Frag attribute in the Maneuver Phase. Discard it to place a Frag chit within 10\" of the unit and in its line of sight. The unit cannot move or attack, and takes an ACT chit." },
+    { id: "int-door-is-yours", type: "intervention", set: "core", name: "The Door Is Yours", notes: "Free door interaction.", text: "Discard when a unit opens or closes a door. The unit takes no movement penalty for the door." },
+    { id: "int-pile-little-arms", type: "intervention", set: "core", name: "Pile of Little Arms", notes: "Ignore a stagger result.", text: "Discard when one of your units rolls a stagger result on a save. The unit stays alive and is not staggered." },
+    { id: "int-ambush", type: "intervention", set: "core", name: "Ambush", factions: ["aayari"], notes: "S-Vest unit maneuvers and detonates.", text: "Use when picking a unit to activate in the Direct Fire Phase. Discard it to activate a unit with the S-Vest attribute. It cannot attack, can maneuver up to 6\", and must detonate its vest this activation. Enemy units without ACT chits may take Immediate Actions against it, but each one that does takes an ACT chit." },
+    { id: "int-front-towards-enemy", type: "intervention", set: "core", name: "Front Towards Enemy", factions: ["aayari"], notes: "S-Vest detonates on a failed save.", text: "Discard before a unit with the S-Vest attribute makes a save roll. If the save fails, the unit detonates." },
+    { id: "int-fire-for-effect", type: "intervention", set: "core", name: "Fire for Effect", factions: ["cts"], notes: "Three Finishing Phase attacks.", text: "Discard when activating a unit in the Finishing Phase. It attacks up to three eligible targets instead of one." },
+    { id: "int-react-to-contact", type: "intervention", set: "core", name: "React to Contact", factions: ["cts"], notes: "Attack again after failing to kill.", text: "Discard after an attack fails to kill its target. The unit attacks again." },
+
+    // Phase Line Intervention
+    { id: "int-troops-in-contact", type: "intervention", set: "phaseline", name: "Troops in Contact", notes: "Immediate Action with an ACT chit.", text: "Play in the Maneuver Phase when one of your units that already has an ACT chit has line of sight to the active enemy unit. Your unit can take an Immediate Action anyway. Then discard." },
+    { id: "int-shoot-first", type: "intervention", set: "phaseline", name: "Shoot First, Hit First", notes: "Pre-empt an Immediate Action.", text: "Play when your opponent declares an Immediate Action against your unit before it has attacked in a Maneuver Phase activation. Every Immediate Action against your active unit is cancelled and those enemy units do not take ACT chits. Your unit must immediately attack (or fire a grenade, for an Assault Grenadier) the enemy unit that tried it. Your unit's activation then ends with no further action from either unit. Then discard." },
+    { id: "int-fix-and-finish", type: "intervention", set: "phaseline", name: "Fix and Finish", notes: "Attack a staggered unit again.", text: "Play when an enemy unit you hit rolls a stagger result. Attack that unit again. Then discard." },
+    { id: "int-time-table", type: "intervention", set: "phaseline", name: "Time Table", notes: "Move the turn counter one turn.", text: "Play in the Direct Fire Phase before any unit has activated. Move the turn counter one turn forward or back. Then discard." },
+    { id: "int-course-of-action", type: "intervention", set: "phaseline", name: "Course of Action", notes: "Smother a frag token.", text: "While active in the Maneuver Phase, a unit can move onto a Frag token whose centre is within its movement range. The unit is killed at once and the Frag token is removed. Then discard." },
+    { id: "int-return-to-sender", type: "intervention", set: "phaseline", name: "Return to Sender", notes: "Relocate a frag chit.", text: "Play when one of your units moves onto a Frag chit in the Maneuver Phase. Move the chit to any point in the unit's line of sight up to 3\" away. It then works as normal, exploding with dispersion at the start of the Finishing Phase. Then discard." },
+    { id: "int-hell-for-heroes", type: "intervention", set: "phaseline", name: "Hell Is for Heroes", notes: "Charge a frag chit.", text: "Play when one of your units moves onto a Frag chit in the Maneuver Phase. The unit can no longer attack this activation, but can maneuver up to 4\" whatever it has already moved, and must explode with a 2\" radius when the activation ends, even if an Immediate Action kills it first. Then discard." },
+    { id: "int-target-of-opportunity", type: "intervention", set: "phaseline", name: "Target of Opportunity", notes: "Attack twice this activation.", text: "Play when one of your units activates in the Maneuver Phase. It can attack twice this activation, but cannot attack again for the rest of the turn, including Finishing attacks and attacks from Intervention cards. Discard at the end of the activation." },
+    { id: "int-defilade", type: "intervention", set: "phaseline", name: "Defilade", notes: "Penalise a Direct Fire attack.", text: "Play when an enemy declares an obstructed line-of-sight attack on one of your units in the Direct Fire Phase. The attacker loses the Direct Fire +1 and takes -2 instead. Discard once the attack is resolved." },
+    { id: "int-3-second-rule", type: "intervention", set: "phaseline", name: "3 Second Rule", notes: "Unstagger an adjacent friendly.", text: "Play when a friendly unit is active in the Maneuver Phase, has not attacked yet, and is touching a staggered friendly unit. The staggered unit stands back up, both units take ACT chits, and the active unit's activation ends. Then discard." },
+
+    // Core Set Special Intervention (earned, not chosen at muster).
+    // Names from the core rulebook's card list; faction emblems not yet checked.
+    { id: "sint-wide-band-jammers", type: "special", set: "core", name: "Wide-Band Jammers" },
+    { id: "sint-seize-initiative", type: "special", set: "core", name: "Seize the Initiative" },
+    { id: "sint-hongbin-jammers", type: "special", set: "core", name: "Hongbin Jammers" },
+    { id: "sint-violence-of-action", type: "special", set: "core", name: "Violence of Action" },
+    { id: "sint-set-support-element", type: "special", set: "core", name: "Set Support Element" },
+    { id: "sint-go-pills", type: "special", set: "core", name: "Go Pills" },
+    { id: "sint-tunnel-rats", type: "special", set: "core", name: "Tunnel Rats" },
+    { id: "sint-timeline", type: "special", set: "core", name: "Timeline" },
+    { id: "sint-courtesy-burn", type: "special", set: "core", name: "Courtesy Burn" },
+    { id: "sint-give-peace-a-chance", type: "special", set: "core", name: "Give Peace a Chance" },
+    { id: "sint-killing-is-my-business", type: "special", set: "core", name: "Killing Is My Business" }
+  ]
+};
+
+</script>
+<script>
+/* BPRE Roster. Plain JavaScript, no build step. Game data lives in data/data.js. */
+(function () {
+  'use strict';
+
+  var D = window.BPRE_DATA;
+  if (!D) {
+    document.body.innerHTML = '<p style="padding:16px">Could not load data/data.js. Check that the file exists and has no syntax errors.</p>';
+    return;
+  }
+
+  // ---------- helpers ----------
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function index(arr) { var o = {}; (arr || []).forEach(function (x) { o[x.id] = x; }); return o; }
+  function uid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : (many || one + 's')); }
+  function sum(arr, fn) { return arr.reduce(function (n, x) { return n + fn(x); }, 0); }
+  function isObj(o) { return o && typeof o === 'object' && !Array.isArray(o); }
+
+  var PL = D.pointsLabel || 'CP';
+  var SETS = index(D.sets);
+  var MODES = index(D.modes);
+  var FACTIONS = index(D.factions);
+  var UNITS = index(D.units);
+  var CARDS = index(D.cards);
+  var OPTIONS = index(D.options);
+  var QRF = D.qrf || null;
+
+  var EMBEDDED = (function () { try { return window.self !== window.top; } catch (e) { return true; } })();
+  var LS_CURRENT = 'bpre-roster:current:v2';
+  var LS_SAVED = 'bpre-roster:saved:v2';
+  var LS_UI = 'bpre-roster:ui';
+
+  var storage = {
+    get: function (k, fallback) {
+      try { var v = window.localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
+    },
+    set: function (k, v) {
+      try { window.localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; }
+    }
+  };
+
+  // ---------- data queries (pure, take a state) ----------
+  function modeOf(s) { return MODES[s.mode]; }
+
+  function factionHasUnits(fid, mid) {
+    var m = MODES[mid];
+    return D.units.some(function (u) { return u.faction === fid && m.unitSets.indexOf(u.set) !== -1; });
+  }
+  function allyChoices(fid, mid) {
+    var f = FACTIONS[fid];
+    if (!f) return [];
+    return (f.allies || []).filter(function (a) { return FACTIONS[a] && factionHasUnits(a, mid); });
+  }
+  function forceFactions(s) {
+    var out = [];
+    if (s.faction) out.push(s.faction);
+    if (s.ally) out.push(s.ally);
+    return out;
+  }
+  function unitsAvailable(s) {
+    var m = modeOf(s);
+    var fs = forceFactions(s);
+    return D.units.filter(function (u) { return fs.indexOf(u.faction) !== -1 && m.unitSets.indexOf(u.set) !== -1; });
+  }
+  function optionsFor(u, s) {
+    return (u.options || []).map(function (id) { return OPTIONS[id]; }).filter(function (o) {
+      return o && (!o.modes || o.modes.indexOf(s.mode) !== -1);
+    });
+  }
+  function cardAllowed(c, s) {
+    if (!c.factions || !c.factions.length) return true;
+    var fs = forceFactions(s);
+    return c.factions.some(function (f) { return fs.indexOf(f) !== -1; });
+  }
+
+  function qrfAllowed(s) { return !!QRF && modeOf(s).qrf !== false; }
+  function fireSlots(s) { return (modeOf(s).fireSlots || []).filter(function (sl) { return !sl.optional || s.on[sl.id]; }); }
+  function slotShort(sl) { return sl.short || sl.name; }
+  function slotCards(s) {
+    return D.cards.filter(function (c) { return c.slot && cardAllowed(c, s); });
+  }
+
+  // Deployments: the CP pools a force is built in.
+  function deployments(s) {
+    var m = modeOf(s);
+    var list = [{ id: 'main', name: m.mainName || (m.id === 'phaseline' ? 'Initial deployment' : 'Kill team'), points: s.points, budget: 'main' }];
+    if (qrfAllowed(s) && s.on.qrf) list.push({ id: 'qrf', name: 'Quick Reaction Force', budget: 'main', qrf: true, note: 'Held off the battlespace. Units cost ' + QRF.discount + ' ' + PL + ' less (minimum ' + QRF.minimum + ').' });
+    (m.deployments || []).forEach(function (d) {
+      if (!d.optional || s.on[d.id]) list.push({ id: d.id, name: d.name, points: d.points, budget: d.id, note: d.note, optional: d.optional, reserve: !!d.reserve, allowedUnits: d.allowedUnits || null });
+    });
+    return list;
+  }
+  function budgets(s) {
+    return deployments(s).filter(function (d) { return d.budget === d.id; }).map(function (d) {
+      var deps = deployments(s).filter(function (x) { return x.budget === d.id; });
+      return { id: d.id, name: d.name, limit: d.points, deps: deps, used: sum(deps, function (x) { return depTotal(s, x); }) };
+    });
+  }
+  function unitCost(u, dep) {
+    if (u.cost == null) return 0;
+    if (dep && dep.qrf && QRF) return Math.max(QRF.minimum, u.cost - QRF.discount);
+    return u.cost;
+  }
+  function qty(s, depId, unitId) { return (s.units[depId] && s.units[depId][unitId]) || 0; }
+  function optQty(s, depId, unitId, optId) {
+    var o = s.opts[depId] && s.opts[depId][unitId];
+    return (o && o[optId]) || 0;
+  }
+  function depRows(s, dep) {
+    return D.units.filter(function (u) { return qty(s, dep.id, u.id) > 0; }).map(function (u) {
+      var q = qty(s, dep.id, u.id);
+      var opts = optionsFor(u, s).map(function (o) { return { o: o, n: Math.min(q, optQty(s, dep.id, u.id, o.id)) }; }).filter(function (x) { return x.n > 0; });
+      return { u: u, q: q, opts: opts, cost: unitCost(u, dep) * q + sum(opts, function (x) { return x.o.cost * x.n; }) };
+    });
+  }
+  function depTotal(s, dep) { return sum(depRows(s, dep), function (r) { return r.cost; }); }
+  // Units actually fielded (reserve pools don't count towards ratios).
+  function totalQty(s, unitId) { return sum(deployments(s).filter(function (d) { return !d.reserve; }), function (d) { return qty(s, d.id, unitId); }); }
+  function modelCount(s) { return sum(deployments(s), function (d) { return sum(depRows(s, d), function (r) { return r.q; }); }); }
+
+  function perPointsCap(s, u, budget) {
+    if (!u.perPoints) return Infinity;
+    return Math.floor(budget.used / u.perPoints);
+  }
+  function budgetOf(s, depId) {
+    var dep = deployments(s).filter(function (d) { return d.id === depId; })[0];
+    return budgets(s).filter(function (b) { return dep && b.id === dep.budget; })[0];
+  }
+  function ratioFor(unitId) {
+    return (D.ratios || []).filter(function (r) { return r.members.indexOf(unitId) !== -1; })[0] || null;
+  }
+  function ratioState(s, r) {
+    var have = sum(r.members, function (id) { return totalQty(s, id); });
+    var base = sum(r.per, function (id) { return totalQty(s, id); });
+    return { have: have, cap: base * r.max };
+  }
+
+  function grantedFires(s) {
+    var out = {};
+    deployments(s).filter(function (d) { return !d.reserve; }).forEach(function (d) {
+      depRows(s, d).forEach(function (r) {
+        (r.u.fires || []).forEach(function (f) {
+          if (!CARDS[f.card]) return;
+          if (!out[f.card]) out[f.card] = { c: CARDS[f.card], n: 0, from: [] };
+          out[f.card].n += f.count * r.q;
+          if (out[f.card].from.indexOf(r.u.name) === -1) out[f.card].from.push(r.u.name);
+        });
+      });
+    });
+    return Object.keys(out).map(function (k) { return out[k]; });
+  }
+  function pickedCards(s, type) {
+    return D.cards.filter(function (c) { return c.type === type && s.cards[c.id] > 0; }).map(function (c) { return { c: c, q: s.cards[c.id] }; });
+  }
+  function pickedCount(s, type) { return sum(pickedCards(s, type), function (r) { return r.q; }); }
+  function cardLimit(s, type) {
+    var v = type === 'intervention' ? modeOf(s).interventionLimit : type === 'fires' ? modeOf(s).firesLimit : null;
+    return typeof v === 'number' ? v : null;
+  }
+
+  function issues(s) {
+    var list = [];
+    if (!s.faction) { list.push({ level: 'info', text: 'Pick a faction to start your team.' }); return list; }
+    if (!modelCount(s)) list.push({ level: 'info', text: 'Add units in step 3.' });
+    budgets(s).forEach(function (b) {
+      if (b.used > b.limit) list.push({ level: 'error', text: b.name + ' is over by ' + (b.used - b.limit) + ' ' + PL + '.' });
+    });
+    deployments(s).forEach(function (d) {
+      if (d.id === 'qrf' && !depRows(s, d).length) list.push({ level: 'info', text: 'QRF is switched on but empty.' });
+    });
+    budgets(s).forEach(function (b) {
+      if (b.deps.some(function (d) { return d.reserve; })) return;
+      var seen = {};
+      b.deps.forEach(function (d) { depRows(s, d).forEach(function (r) { seen[r.u.id] = (seen[r.u.id] || 0) + r.q; }); });
+      Object.keys(seen).forEach(function (id) {
+        var u = UNITS[id];
+        var cap = perPointsCap(s, u, b);
+        if (seen[id] > cap) {
+          list.push({ level: 'error', text: u.name + ': one per ' + u.perPoints + ' ' + PL + ' of warfighting units. ' + b.name + ' has ' + b.used + ' ' + PL + ', so ' + (cap === 0 ? 'none are' : cap + ' ' + (cap === 1 ? 'is' : 'are')) + ' allowed; you have ' + seen[id] + '.' });
+        }
+      });
+    });
+    (D.ratios || []).forEach(function (r) {
+      var st = ratioState(s, r);
+      if (st.have > st.cap) list.push({ level: 'error', text: r.label + '. You have ' + st.have + ' and room for ' + st.cap + '.' });
+    });
+    ['intervention', 'fires'].forEach(function (t) {
+      var lim = cardLimit(s, t);
+      if (lim != null && pickedCount(s, t) > lim) list.push({ level: 'error', text: (t === 'fires' ? 'Fires' : 'Intervention') + ': ' + pickedCount(s, t) + ' picked, limit is ' + lim + '.' });
+    });
+    var open = fireSlots(s).filter(function (sl) { return !s.slots[sl.id]; });
+    if (open.length && modelCount(s)) list.push({ level: 'info', text: 'Phase Line Fires still to choose: ' + open.map(function (sl) { return sl.name; }).join(', ') + '.' });
+    var il = cardLimit(s, 'intervention');
+    if (il != null && pickedCount(s, 'intervention') < il && modelCount(s)) list.push({ level: 'info', text: 'Pick ' + (il - pickedCount(s, 'intervention')) + ' more Intervention ' + (il - pickedCount(s, 'intervention') === 1 ? 'card' : 'cards') + ' for a full hand of ' + il + '.' });
+    return list;
+  }
+
+  // ---------- state ----------
+  function blankState() {
+    var m = D.modes[0];
+    return { id: uid(), name: '', mode: m.id, points: m.defaultPoints, faction: null, ally: null, on: {}, units: {}, opts: {}, cards: {}, slots: {} };
+  }
+
+  function sanitize(raw) {
+    var s = blankState();
+    if (!isObj(raw)) return s;
+    if (typeof raw.id === 'string') s.id = raw.id;
+    if (typeof raw.name === 'string') s.name = raw.name.slice(0, 60);
+    if (MODES[raw.mode]) s.mode = raw.mode;
+    var p = parseInt(raw.points, 10);
+    s.points = p > 0 && p <= 5000 ? p : modeOf(s).defaultPoints;
+    if (isObj(raw.on)) {
+      if (raw.on.qrf && qrfAllowed(s)) s.on.qrf = true;
+      (modeOf(s).deployments || []).concat(modeOf(s).fireSlots || []).forEach(function (d) { if (d.optional && raw.on[d.id]) s.on[d.id] = true; });
+    }
+    if (FACTIONS[raw.faction] && factionHasUnits(raw.faction, s.mode)) s.faction = raw.faction;
+    if (s.faction && allyChoices(s.faction, s.mode).indexOf(raw.ally) !== -1) s.ally = raw.ally;
+
+    var allowed = {};
+    unitsAvailable(s).forEach(function (u) { allowed[u.id] = true; });
+    deployments(s).forEach(function (d) {
+      var src = isObj(raw.units) && isObj(raw.units[d.id]) ? raw.units[d.id] : {};
+      Object.keys(src).forEach(function (id) {
+        var q = parseInt(src[id], 10);
+        if (allowed[id] && q > 0 && (!d.allowedUnits || d.allowedUnits.indexOf(id) !== -1)) {
+          (s.units[d.id] = s.units[d.id] || {})[id] = Math.min(q, 99);
+          var osrc = isObj(raw.opts) && isObj(raw.opts[d.id]) && isObj(raw.opts[d.id][id]) ? raw.opts[d.id][id] : {};
+          optionsFor(UNITS[id], s).forEach(function (o) {
+            var n = parseInt(osrc[o.id], 10);
+            if (n > 0) {
+              s.opts[d.id] = s.opts[d.id] || {};
+              s.opts[d.id][id] = s.opts[d.id][id] || {};
+              s.opts[d.id][id][o.id] = Math.min(n, s.units[d.id][id]);
+            }
+          });
+        }
+      });
+    });
+    if (isObj(raw.cards)) {
+      Object.keys(raw.cards).forEach(function (id) {
+        var c = CARDS[id];
+        var q = parseInt(raw.cards[id], 10);
+        if (c && !c.granted && !c.slot && q > 0 && cardAllowed(c, s)) s.cards[id] = Math.min(q, c.maxCopies || 1);
+      });
+    }
+    if (isObj(raw.slots)) {
+      var used = {};
+      fireSlots(s).forEach(function (sl) {
+        var c = CARDS[raw.slots[sl.id]];
+        if (c && c.slot && cardAllowed(c, s) && !used[c.id]) { s.slots[sl.id] = c.id; used[c.id] = true; }
+      });
+    }
+    return s;
+  }
+
+  var state = sanitize(storage.get(LS_CURRENT, null));
+  var savedUi = storage.get(LS_UI, {}) || {};
+  var ui = {
+    dep: 'main',
+    cardTab: ['fires', 'special'].indexOf(savedUi.cardTab) !== -1 ? savedUi.cardTab : 'intervention',
+    setFilter: Array.isArray(savedUi.setFilter) ? savedUi.setFilter.filter(function (id) { return SETS[id]; }) : [],
+    undo: null,
+    pendingDelete: null,
+    openCards: {}
+  };
+  if (!ui.setFilter.length) ui.setFilter = D.sets.map(function (s) { return s.id; });
+
+  function currentDep() {
+    var d = deployments(state).filter(function (x) { return x.id === ui.dep; })[0];
+    if (!d) { ui.dep = 'main'; d = deployments(state)[0]; }
+    return d;
+  }
+
+  // ---------- rendering ----------
+  function setBadge(setId) {
+    var s = SETS[setId];
+    return '<span class="badge" title="' + esc(s ? s.name : setId) + '">' + esc(s ? s.short : setId) + '</span>';
+  }
+
+  function renderMode() {
+    $('#mode-options').innerHTML = D.modes.map(function (m) {
+      var on = m.id === state.mode;
+      var sets = m.unitSets.map(function (id) { return SETS[id] ? SETS[id].short : id; }).join(' + ');
+      return '<button type="button" role="radio" class="mode-card" aria-checked="' + on + '" data-action="set-mode" data-id="' + esc(m.id) + '">' +
+        '<span class="mode-name">' + esc(m.name) + '</span>' +
+        '<span class="mode-blurb">' + esc(m.blurb || '') + '</span>' +
+        '<span class="mode-sets">Units: ' + esc(sets) + '</span>' +
+        '</button>';
+    }).join('');
+
+    var m = modeOf(state);
+    $('#points-label').textContent = (m.id === 'phaseline' ? 'Initial deployment' : 'Kill team') + ' CP';
+    var isPreset = m.presets.some(function (p) { return p.points === state.points; });
+    $('#points-options').innerHTML = m.presets.map(function (p) {
+      return '<button type="button" role="radio" class="preset" aria-checked="' + (p.points === state.points) + '" data-action="set-points" data-value="' + p.points + '">' +
+        '<span class="preset-pts mono">' + p.points + ' ' + PL + '</span><span class="preset-label">' + esc(p.label) + '</span></button>';
+    }).join('');
+    var ci = $('#custom-points');
+    if (document.activeElement !== ci) ci.value = isPreset ? '' : state.points;
+
+    var extras = [];
+    (m.deployments || []).forEach(function (d) {
+      if (d.optional) {
+        extras.push('<label class="toggle"><input type="checkbox" data-toggle="' + esc(d.id) + '"' + (state.on[d.id] ? ' checked' : '') + '><span><b>' + esc(d.name) + '</b> +' + d.points + ' ' + PL + '. ' + esc(d.note || '') + '</span></label>');
+      } else {
+        extras.push('<div class="fixed-dep"><span class="mono">+' + d.points + '</span><span><b>' + esc(d.name) + '</b> reinforcements, ' + d.points + ' ' + PL + '. ' + esc(d.note || '') + '</span></div>');
+      }
+    });
+    (m.fireSlots || []).forEach(function (sl) {
+      if (sl.optional) extras.push('<label class="toggle"><input type="checkbox" data-toggle="' + esc(sl.id) + '"' + (state.on[sl.id] ? ' checked' : '') + '><span><b>' + esc(sl.name) + '</b>. ' + esc(sl.note || '') + '</span></label>');
+    });
+    if (qrfAllowed(state)) {
+      extras.push('<label class="toggle"><input type="checkbox" data-toggle="qrf"' + (state.on.qrf ? ' checked' : '') + '><span><b>Quick Reaction Force</b> (defending player). Set aside part of the kill team CP; QRF units cost ' + QRF.discount + ' ' + PL + ' less, minimum ' + QRF.minimum + '.</span></label>');
+    }
+    var total = state.points + sum(deployments(state).filter(function (d) { return d.budget === d.id && d.id !== 'main'; }), function (d) { return d.points; });
+    $('#extras').innerHTML = extras.join('') + (total !== state.points ? '<div class="total-line mono">Total ' + total + ' ' + PL + '</div>' : '');
+  }
+
+  function renderFaction() {
+    var blocs = [];
+    D.factions.forEach(function (f) { if (blocs.indexOf(f.bloc) === -1) blocs.push(f.bloc); });
+    $('#faction-options').innerHTML = blocs.map(function (b) {
+      return '<div class="bloc"><div class="bloc-name">' + esc(b) + '</div><div class="bloc-grid">' +
+        D.factions.filter(function (f) { return f.bloc === b; }).map(function (f) {
+          var ok = factionHasUnits(f.id, state.mode);
+          var on = f.id === state.faction;
+          return '<button type="button" role="radio" class="faction-card" aria-checked="' + on + '" data-action="set-faction" data-id="' + esc(f.id) + '"' + (ok ? '' : ' disabled') + '>' +
+            '<span class="faction-name">' + esc(f.name) + '</span>' +
+            '<span class="faction-sub">' + esc(f.subtitle || '') + '</span>' +
+            (ok ? '' : '<span class="why">No units in ' + esc(modeOf(state).name) + '</span>') +
+            '</button>';
+        }).join('') + '</div></div>';
+    }).join('');
+
+    var choices = state.faction ? allyChoices(state.faction, state.mode) : [];
+    $('#ally-block').hidden = !choices.length;
+    if (choices.length) {
+      $('#ally-options').innerHTML = ['<button type="button" role="radio" class="chip" aria-checked="' + (!state.ally) + '" data-action="set-ally" data-id="">None</button>']
+        .concat(choices.map(function (a) {
+          return '<button type="button" role="radio" class="chip" aria-checked="' + (state.ally === a) + '" data-action="set-ally" data-id="' + esc(a) + '">' + esc(FACTIONS[a].name) + '</button>';
+        })).join('');
+      var notes = [];
+      if (choices.length > 1) notes.push(FACTIONS[state.faction].name + ' can field with ' + choices.map(function (a) { return FACTIONS[a].name; }).join(' or ') + ', never both.');
+      [state.faction].concat(choices).forEach(function (id) { if (FACTIONS[id].note && notes.indexOf(FACTIONS[id].note) === -1 && (id === state.faction || id === state.ally)) notes.push(FACTIONS[id].note); });
+      $('#ally-note').textContent = notes.join(' ');
+    }
+  }
+
+  function renderTeam() {
+    var box = $('#unit-list');
+    var tabs = $('#dep-tabs');
+    if (!state.faction) {
+      tabs.innerHTML = '';
+      $('#dep-note').textContent = '';
+      box.innerHTML = '<div class="empty">Choose a faction in step 2 to see its units.</div>';
+      return;
+    }
+    var deps = deployments(state);
+    var dep = currentDep();
+    tabs.hidden = deps.length < 2;
+    tabs.innerHTML = deps.map(function (d) {
+      var b = budgetOf(state, d.id);
+      var used = depTotal(state, d);
+      var label = d.budget === d.id ? used + '/' + d.points : String(used);
+      var over = b && b.used > b.limit;
+      return '<button type="button" role="tab" class="dep-tab' + (over ? ' over' : '') + '" aria-selected="' + (d.id === dep.id) + '" data-action="set-dep" data-id="' + esc(d.id) + '">' +
+        '<span class="dep-name">' + esc(d.name) + '</span><span class="mono dep-pts">' + label + ' ' + PL + '</span></button>';
+    }).join('');
+    $('#dep-note').textContent = dep.note || (deps.length > 1 ? 'Adding units to ' + dep.name + '.' : '');
+
+    var budget = budgetOf(state, dep.id);
+    var groups = [];
+    forceFactions(state).forEach(function (fid) {
+      modeOf(state).unitSets.forEach(function (sid) {
+        var list = unitsAvailable(state).filter(function (u) { return u.faction === fid && u.set === sid && (!dep.allowedUnits || dep.allowedUnits.indexOf(u.id) !== -1); });
+        if (list.length) groups.push({ fid: fid, sid: sid, list: list });
+      });
+    });
+
+    box.innerHTML = groups.map(function (g) {
+      var f = FACTIONS[g.fid];
+      var heading = f.name + ' · ' + SETS[g.sid].name + (g.fid !== state.faction ? ' (ally)' : '');
+      return '<div class="unit-group"><h3>' + esc(heading) + '</h3><div class="unit-rows">' +
+        g.list.map(function (u) { return unitRow(u, dep, budget); }).join('') + '</div></div>';
+    }).join('');
+  }
+
+  function unitRow(u, dep, budget) {
+    var q = qty(state, dep.id, u.id);
+    var rule = [];
+    if (u.move) rule.push(u.move + '" move');
+    if (u.perPoints && !dep.reserve) {
+      var cap = perPointsCap(state, u, budget);
+      rule.push('1 per ' + u.perPoints + ' ' + PL + ' (' + (cap === Infinity ? '' : cap + ' allowed now') + ')');
+    }
+    var r = ratioFor(u.id);
+    if (r && !dep.reserve) { var st = ratioState(state, r); rule.push('Shurta ' + st.have + '/' + st.cap); }
+    (u.fires || []).forEach(function (fr) { if (CARDS[fr.card]) rule.push('+' + fr.count + ' ' + CARDS[fr.card].name); });
+
+    var ratioBlocked = r && !dep.reserve && ratioState(state, r).have >= ratioState(state, r).cap;
+    var cost = unitCost(u, dep);
+    var costHtml = '<span>' + cost + ' ' + PL + '</span>' + (dep.qrf && cost !== u.cost ? '<span class="was">' + u.cost + '</span>' : '');
+
+    var opts = optionsFor(u, state);
+    var optHtml = '';
+    if (q && opts.length) {
+      optHtml = '<div class="unit-opts">' + opts.map(function (o) {
+        var n = Math.min(q, optQty(state, dep.id, u.id, o.id));
+        return '<div class="opt"><span class="opt-name" title="' + esc(o.notes || '') + '">' + esc(o.name) + ' <span class="mono">+' + o.cost + '</span></span>' +
+          '<div class="stepper small" role="group" aria-label="' + esc(u.name + ' ' + o.name) + '">' +
+          '<button type="button" data-action="opt-dec" data-id="' + esc(u.id) + '" data-opt="' + esc(o.id) + '" aria-label="Remove ' + esc(o.name) + '"' + (n ? '' : ' disabled') + '>−</button>' +
+          '<span class="qty">' + n + '</span>' +
+          '<button type="button" data-action="opt-inc" data-id="' + esc(u.id) + '" data-opt="' + esc(o.id) + '" aria-label="Add ' + esc(o.name) + '"' + (n < q ? '' : ' disabled') + '>+</button></div></div>';
+      }).join('') + '</div>';
+    }
+
+    return '<div class="unit-row' + (q ? ' in-team' : '') + '">' +
+      '<div class="unit-main"><div class="unit-name">' + esc(u.name) + setBadge(u.set) + '</div>' +
+      (u.notes ? '<div class="unit-notes">' + esc(u.notes) + '</div>' : '') +
+      (rule.length ? '<div class="unit-rule">' + esc(rule.join(' · ')) + '</div>' : '') +
+      '</div>' +
+      '<div class="unit-cost">' + costHtml + '</div>' +
+      '<div class="stepper" role="group" aria-label="' + esc(u.name) + ' quantity">' +
+      '<button type="button" data-action="unit-dec" data-id="' + esc(u.id) + '" aria-label="Remove one ' + esc(u.name) + '"' + (q ? '' : ' disabled') + '>−</button>' +
+      '<span class="qty">' + q + '</span>' +
+      '<button type="button" data-action="unit-inc" data-id="' + esc(u.id) + '" aria-label="Add one ' + esc(u.name) + '"' + (ratioBlocked || q >= 99 ? ' disabled title="' + esc(r ? r.label : 'Limit reached') + '"' : '') + '>+</button>' +
+      '</div>' + optHtml + '</div>';
+  }
+
+  function renderCards() {
+    ['intervention', 'special', 'fires'].forEach(function (t) {
+      $('#tab-' + t).setAttribute('aria-selected', String(ui.cardTab === t));
+      var lim = cardLimit(state, t);
+      var n = pickedCount(state, t) + (t === 'fires' ? sum(grantedFires(state), function (g) { return g.n; }) + Object.keys(state.slots).length : 0);
+      $('#count-' + t).textContent = (t === 'intervention' && lim != null) ? pickedCount(state, t) + '/' + lim : String(n);
+    });
+
+    $('#set-filter').innerHTML = D.sets.map(function (s) {
+      var on = ui.setFilter.indexOf(s.id) !== -1;
+      return '<button type="button" class="chip" aria-pressed="' + on + '" data-action="set-filter" data-id="' + esc(s.id) + '">' + esc(s.name) + '</button>';
+    }).join('');
+
+    var type = ui.cardTab;
+    var lim = cardLimit(state, type);
+    var full = lim != null && pickedCount(state, type) >= lim;
+    var hint;
+    if (type === 'intervention') {
+      hint = 'Choose a hand of ' + (lim || 3) + ' unique Intervention cards from any set. Cards with a faction emblem only appear when that faction is in your force.';
+    } else if (type === 'special') {
+      hint = 'Special Intervention cards are earned: by winning an Operation in a Night Raid, as a tasking reward, or in Phase Line by choosing two instead of firing a Phase Line Fires card. Mark the ones you hold.';
+    } else {
+      hint = 'Unit Fires (Scoria RS, FengHuang-918, Quadrotor) come with the units that carry them and are added for you.';
+      hint += fireSlots(state).length
+        ? ' Place one Phase Line Fires card face down at each phase line.'
+        : ' Phase Line Fires are placed in Phase Line games, or held in the Spearhead Forward Observer Post tasking.';
+      if (fireSlots(state).length && modeOf(state).id !== 'phaseline') hint = hint.replace(' Place one Phase Line Fires card face down at each phase line.', ' Hold one Phase Line Fires card for the Forward Observer Post.');
+    }
+    $('#card-hint').textContent = hint;
+
+
+    var html = '';
+    if (type === 'fires') {
+      var g = grantedFires(state);
+      html += g.map(function (x) {
+        return cardHtml(x.c, x.n, '<span class="granted">From ' + esc(x.from.join(', ')) + '</span>', true);
+      }).join('');
+      var slots = fireSlots(state);
+      if (slots.length) {
+        html += slotCards(state).filter(function (c) { return ui.setFilter.indexOf(c.set) !== -1; }).map(function (c) {
+          var placed = slots.filter(function (sl) { return state.slots[sl.id] === c.id; });
+          var control = '<div class="slot-btns">' + slots.map(function (sl) {
+            var on = state.slots[sl.id] === c.id;
+            var taken = state.slots[sl.id] && !on;
+            return '<button type="button" class="pick-btn' + (taken ? ' swap' : '') + '" data-action="slot-toggle" data-id="' + esc(c.id) + '" data-slot="' + esc(sl.id) + '" aria-pressed="' + on + '"' + (placed.length && !on ? ' disabled' : '') + ' title="' + esc(taken ? 'Replace ' + CARDS[state.slots[sl.id]].name + ' at ' + sl.name : sl.name) + '">' + esc(slotShort(sl)) + '</button>';
+          }).join('') + '</div>';
+          return cardHtml(c, placed.length, control, false);
+        }).join('');
+      }
+    }
+    var list = D.cards.filter(function (c) {
+      return c.type === type && !c.granted && !c.slot && ui.setFilter.indexOf(c.set) !== -1 && cardAllowed(c, state);
+    });
+    html += list.map(function (c) {
+      var q = state.cards[c.id] || 0;
+      var control = '<button type="button" class="pick-btn" data-action="card-toggle" data-id="' + esc(c.id) + '" aria-pressed="' + (q > 0) + '"' + (!q && full ? ' disabled title="Hand is full"' : '') + '>' + (q ? 'Picked' : 'Pick') + '</button>';
+      return cardHtml(c, q, control, false);
+    }).join('');
+    $('#card-list').innerHTML = html || '<div class="empty">No cards match these sets' + (state.faction ? '' : '. Faction cards appear once you pick a faction') + '.</div>';
+    syncExpandAll();
+  }
+
+  function visibleCardIds() {
+    return Array.prototype.map.call(document.querySelectorAll('#card-list [data-action="card-text"]'), function (el) { return el.getAttribute('data-id'); });
+  }
+  function syncExpandAll() {
+    var ids = visibleCardIds();
+    var btn = $('#expand-all');
+    btn.hidden = !ids.length;
+    var allOpen = ids.length && ids.every(function (id) { return ui.openCards[id]; });
+    btn.textContent = allOpen ? 'Collapse all' : 'Expand all';
+  }
+
+  function cardTextHtml(c) {
+    var open = !!ui.openCards[c.id];
+    var tid = 'ct-' + c.id;
+    var body = c.text
+      ? '<p>' + esc(c.text) + '</p>'
+      : '<p class="tbc">Full effect not added yet. Check the printed card.</p>';
+    return '<div class="card-text">' +
+      '<button type="button" class="text-toggle" data-action="card-text" data-id="' + esc(c.id) + '" aria-expanded="' + open + '" aria-controls="' + esc(tid) + '">' +
+      '<span>' + (open ? 'Hide effect' : 'Full effect') + '</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>' +
+      '<div class="text-body" id="' + esc(tid) + '"' + (open ? '' : ' hidden') + '>' + body + '</div></div>';
+  }
+
+  function cardHtml(c, q, control, granted) {
+    var emblem = (c.factions || []).map(function (f) { return FACTIONS[f] ? FACTIONS[f].name : f; }).join(', ');
+    return '<div class="game-card' + (q ? ' picked' : '') + (granted ? ' granted-card' : '') + (ui.openCards[c.id] ? ' text-open' : '') + '">' +
+      '<div class="card-type"><span>' + esc(c.subtype || ({ fires: 'Fires', special: 'Special Intervention' }[c.type] || 'Intervention')) + '</span><span title="' + esc(SETS[c.set] ? SETS[c.set].name : c.set) + '">' + esc(SETS[c.set] ? SETS[c.set].short : c.set) + '</span></div>' +
+      '<div class="card-name">' + esc(c.name) + (granted ? ' <span class="mono">×' + q + '</span>' : '') + '</div>' +
+      (c.notes ? '<div class="card-notes">' + esc(c.notes) + '</div>' : '') +
+      cardTextHtml(c) +
+      '<div class="card-foot"><span class="count">' + (emblem ? esc(emblem) + ' only' : '') + '</span>' + control + '</div>' +
+      '</div>';
+  }
+
+  function dtg(d) {
+    var mon = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][d.getUTCMonth()];
+    function p(n) { return (n < 10 ? '0' : '') + n; }
+    return p(d.getUTCDate()) + p(d.getUTCHours()) + p(d.getUTCMinutes()) + 'Z ' + mon + ' ' + String(d.getUTCFullYear()).slice(-2);
+  }
+
+  function forceLabel(s) {
+    var f = FACTIONS[s.faction];
+    if (!f) return 'No faction';
+    return f.name + (s.ally && FACTIONS[s.ally] ? ' + ' + FACTIONS[s.ally].name : '');
+  }
+
+  function renderSummary() {
+    var m = modeOf(state);
+    $('#h-summary').textContent = state.name || 'Untitled roster';
+    $('#sheet-meta').textContent = m.name + ' · ' + forceLabel(state);
+    $('#dtg').textContent = dtg(new Date());
+
+    var bs = budgets(state);
+    $('#budgets').innerHTML = bs.map(function (b, i) {
+      var over = b.used > b.limit;
+      var pct = Math.min(100, b.limit ? (b.used / b.limit) * 100 : 0);
+      var left = b.limit - b.used;
+      return '<div class="meter' + (over ? ' over' : '') + (i ? ' minor' : '') + '">' +
+        (bs.length > 1 ? '<div class="meter-name">' + esc(b.name) + '</div>' : '') +
+        '<div class="meter-nums"><span class="mono big">' + b.used + '</span><span class="mono">/ ' + b.limit + ' ' + PL + '</span>' +
+        '<span class="meter-left">' + (left >= 0 ? left + ' left' : Math.abs(left) + ' over') + '</span></div>' +
+        '<div class="meter-track"><div class="meter-fill" style="width:' + pct + '%"></div></div></div>';
+    }).join('');
+
+    var iss = issues(state);
+    $('#issues').innerHTML = iss.map(function (i) { return '<li class="issue ' + i.level + '">' + esc(i.text) + '</li>'; }).join('');
+
+    var deps = deployments(state);
+    $('#sheet-units').innerHTML = deps.map(function (d) {
+      var rows = depRows(state, d);
+      if (!rows.length && d.id !== 'main') return '';
+      return '<h3 class="sheet-h">' + esc(deps.length > 1 ? d.name : 'Team') + '</h3><ul class="sheet-list">' +
+        (rows.length ? rows.map(function (r) {
+          var extra = r.opts.map(function (x) { return x.o.name + (x.n < r.q || r.q > 1 ? ' ×' + x.n : ''); }).join(', ');
+          return '<li><span class="q">' + r.q + '×</span><span class="n">' + esc(r.u.name) + (extra ? '<span class="sub">' + esc(extra) + '</span>' : '') + '</span><span class="p">' + r.cost + '</span></li>';
+        }).join('') : '<li><span class="none">No units yet</span></li>') + '</ul>';
+    }).join('');
+
+    var il = cardLimit(state, 'intervention');
+    var ic = pickedCards(state, 'intervention');
+    $('#sheet-intervention').innerHTML = ic.length ? ic.map(function (r) {
+      return '<li><span class="q">1×</span><span class="n">' + esc(r.c.name) + '</span><span class="p">' + esc(SETS[r.c.set] ? SETS[r.c.set].short : '') + '</span></li>';
+    }).join('') : '<li><span class="none">None picked' + (il != null ? ' (hand of ' + il + ')' : '') + '</span></li>';
+
+    var sc = pickedCards(state, 'special');
+    $('#sheet-special-wrap').hidden = !sc.length;
+    $('#sheet-special').innerHTML = sc.map(function (r) {
+      return '<li><span class="q">1×</span><span class="n">' + esc(r.c.name) + '</span><span class="p">' + esc(SETS[r.c.set] ? SETS[r.c.set].short : '') + '</span></li>';
+    }).join('');
+
+    var fc = grantedFires(state).map(function (g) { return { c: g.c, q: g.n }; }).concat(pickedCards(state, 'fires'));
+    var fireHtml = fc.map(function (r) {
+      return '<li><span class="q">' + r.q + '×</span><span class="n">' + esc(r.c.name) + '</span><span class="p">' + esc(SETS[r.c.set] ? SETS[r.c.set].short : '') + '</span></li>';
+    }).join('');
+    fireHtml += fireSlots(state).map(function (sl) {
+      var c = CARDS[state.slots[sl.id]];
+      return '<li><span class="q">' + esc(slotShort(sl)) + '</span><span class="n">' + (c ? esc(c.name) : '<span class="tbc">Not placed</span>') + '</span><span class="p">' + (c ? 'PL' : '') + '</span></li>';
+    }).join('');
+    $('#sheet-fires').innerHTML = fireHtml || '<li><span class="none">None</span></li>';
+
+    var errors = iss.filter(function (i) { return i.level === 'error'; }).length;
+    var main = bs[0];
+    var bar = $('#mobile-bar');
+    bar.classList.toggle('over', errors > 0);
+    $('#mb-used').textContent = main.used;
+    $('#mb-limit').textContent = main.limit;
+    $('#mb-status').textContent = errors ? plural(errors, 'problem') : plural(modelCount(state), 'model') + ' · ' + pickedCount(state, 'intervention') + ' Int';
+
+    var nameInput = $('#roster-name');
+    if (document.activeElement !== nameInput) nameInput.value = state.name;
+  }
+
+  function renderSaved() {
+    var saved = storage.get(LS_SAVED, []) || [];
+    $('#saved-count').textContent = saved.length ? String(saved.length) : '';
+    var listEl = $('#saved-list');
+    if (!saved.length) {
+      listEl.innerHTML = '<li class="saved-empty">No saved rosters yet. Press Save to keep the current one on this device.</li>';
+      return;
+    }
+    listEl.innerHTML = saved.slice().sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); }).map(function (r) {
+      var s = sanitize(r.state);
+      var when = r.savedAt ? new Date(r.savedAt).toLocaleString() : '';
+      var confirming = ui.pendingDelete === s.id;
+      return '<li><span class="saved-name">' + esc(s.name || 'Untitled roster') + '</span>' +
+        '<span class="saved-meta">' + esc(modeOf(s).name + ' · ' + forceLabel(s) + ' · ' + when) + '</span>' +
+        '<button type="button" class="btn" data-action="load-saved" data-id="' + esc(s.id) + '">Open</button>' +
+        '<button type="button" class="btn danger" data-action="delete-saved" data-id="' + esc(s.id) + '">' + (confirming ? 'Confirm delete' : 'Delete') + '</button></li>';
+    }).join('');
+  }
+
+  function renderFooter() {
+    var links = [];
+    if (D.repoUrl) links.push('<a href="' + esc(D.repoUrl) + '" target="_blank" rel="noopener">Source and issues on GitHub</a>');
+    links.push('Data version ' + esc(D.version || ''));
+    $('#footer-links').innerHTML = links.join(' · ');
+  }
+
+  function render() {
+    renderMode();
+    renderFaction();
+    renderTeam();
+    renderCards();
+    renderSummary();
+    storage.set(LS_CURRENT, state);
+    storage.set(LS_UI, { cardTab: ui.cardTab, setFilter: ui.setFilter });
+  }
+
+  // ---------- toast and undo ----------
+  var toastTimer = null;
+  function toast(msg, undoState) {
+    ui.undo = undoState || null;
+    $('#toast-msg').textContent = msg;
+    $('#toast-undo').hidden = !undoState;
+    $('#toast').hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { $('#toast').hidden = true; ui.undo = null; }, undoState ? 7000 : 3500);
+  }
+
+  // ---------- roster code / text ----------
+  function b64encode(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function b64decode(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function encodeRoster(s) {
+    var compact = { v: 2, n: s.name, m: s.mode, p: s.points, f: s.faction, a: s.ally, on: s.on, u: s.units, o: s.opts, c: s.cards, s: s.slots };
+    return 'BPRE2.' + b64encode(JSON.stringify(compact));
+  }
+  function decodeRoster(code) {
+    code = String(code || '').trim();
+    var m = code.match(/BPRE2\.([A-Za-z0-9_-]+)/);
+    if (!m) throw new Error('That does not look like a roster code. Codes start with BPRE2.');
+    var o = JSON.parse(b64decode(m[1]));
+    return sanitize({ name: o.n, mode: o.m, points: o.p, faction: o.f, ally: o.a, on: o.on, units: o.u, opts: o.o, cards: o.c, slots: o.s });
+  }
+  function rosterText(s) {
+    var m = modeOf(s);
+    var lines = [];
+    lines.push((s.name || 'Untitled roster').toUpperCase());
+    lines.push(m.name + ' | ' + forceLabel(s));
+    budgets(s).forEach(function (b) { lines.push(b.name + ': ' + b.used + '/' + b.limit + ' ' + PL); });
+    deployments(s).forEach(function (d) {
+      var rows = depRows(s, d);
+      if (!rows.length && d.id !== 'main') return;
+      lines.push('');
+      lines.push(d.name.toUpperCase());
+      if (!rows.length) lines.push('  none');
+      rows.forEach(function (r) {
+        var extra = r.opts.map(function (x) { return x.o.name + ' x' + x.n; }).join(', ');
+        lines.push('  ' + r.q + 'x ' + r.u.name + (extra ? ' (' + extra + ')' : '') + ' [' + r.cost + ']');
+      });
+    });
+    lines.push('');
+    lines.push('INTERVENTION');
+    var ic = pickedCards(s, 'intervention');
+    if (!ic.length) lines.push('  none');
+    ic.forEach(function (r) { lines.push('  ' + r.c.name + ' (' + SETS[r.c.set].name + ')'); });
+    var sc = pickedCards(s, 'special');
+    if (sc.length) {
+      lines.push('');
+      lines.push('SPECIAL INTERVENTION');
+      sc.forEach(function (r) { lines.push('  ' + r.c.name); });
+    }
+    lines.push('');
+    lines.push('FIRES');
+    var g = grantedFires(s);
+    var pf = pickedCards(s, 'fires');
+    if (!g.length && !pf.length) lines.push('  none');
+    g.forEach(function (x) { lines.push('  ' + x.n + 'x ' + x.c.name + ' (from units)'); });
+    pf.forEach(function (r) { lines.push('  ' + r.c.name + ' (' + SETS[r.c.set].name + ')'); });
+    fireSlots(s).forEach(function (sl) {
+      var c = CARDS[s.slots[sl.id]];
+      lines.push('  ' + sl.name + ': ' + (c ? c.name : 'not placed'));
+    });
+    return lines.join('\n');
+  }
+
+  function copy(text, okMsg) {
+    function fallback() {
+      var box = $('#import-box');
+      var ta = $('#import-code');
+      box.hidden = false;
+      ta.value = text;
+      ta.focus();
+      ta.select();
+      toast('Copy was blocked. The text is selected in the box below; copy it from there.');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+    } else fallback();
+  }
+
+  function replaceState(next, msg) {
+    var prev = clone(state);
+    state = next;
+    render();
+    toast(msg, prev);
+  }
+
+  // Re-run sanitize after a structural change and report what was dropped.
+  function reshape(next, prev, why) {
+    var before = modelCount(prev);
+    state = sanitize(next);
+    var after = modelCount(state);
+    render();
+    if (after < before) toast('Removed ' + plural(before - after, 'unit') + ' ' + why + '.', prev);
+  }
+
+  // ---------- theme ----------
+  var LS_THEME = 'bpre-roster:theme';
+  var THEMES = ['auto', 'light', 'dark'];
+  var THEME_ICONS = {
+    auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+    light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>'
+  };
+  var THEME_LABELS = { auto: 'Theme: match device', light: 'Theme: light', dark: 'Theme: dark' };
+  function currentTheme() {
+    var t = document.documentElement.getAttribute('data-theme');
+    return t === 'light' || t === 'dark' ? t : 'auto';
+  }
+  function applyTheme(t) {
+    if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', t);
+    try { if (t === 'auto') window.localStorage.removeItem(LS_THEME); else window.localStorage.setItem(LS_THEME, t); } catch (e) { /* ignore */ }
+    var btn = $('#theme-btn');
+    btn.innerHTML = THEME_ICONS[t];
+    btn.setAttribute('aria-label', THEME_LABELS[t]);
+    btn.title = THEME_LABELS[t];
+  }
+
+  // ---------- actions ----------
+  function bump(map, depId, unitId, delta) {
+    map[depId] = map[depId] || {};
+    var v = (map[depId][unitId] || 0) + delta;
+    if (v > 0) map[depId][unitId] = v; else delete map[depId][unitId];
+  }
+
+  var actions = {
+    'set-mode': function (id) {
+      if (!MODES[id] || id === state.mode) return;
+      var prev = clone(state);
+      var next = clone(state);
+      var m = MODES[id];
+      next.mode = id;
+      var wasPreset = MODES[prev.mode].presets.some(function (p) { return p.points === prev.points; });
+      if (wasPreset || !m.presets.some(function (p) { return p.points === next.points; })) next.points = m.defaultPoints;
+      if (next.faction && !factionHasUnits(next.faction, id)) {
+        state = sanitize(next);
+        render();
+        toast(FACTIONS[prev.faction].name + ' has no units in ' + m.name + '. Faction cleared.', prev);
+        return;
+      }
+      reshape(next, prev, 'not available in ' + m.name);
+    },
+    'set-points': function (_, el) {
+      var v = parseInt(el.getAttribute('data-value'), 10);
+      if (v > 0) { state.points = v; render(); }
+    },
+    'set-faction': function (id) {
+      if (!FACTIONS[id] || id === state.faction || !factionHasUnits(id, state.mode)) return;
+      var prev = clone(state);
+      var next = clone(state);
+      next.faction = id;
+      // Keep the old faction as ally when the pairing is legal.
+      next.ally = allyChoices(id, state.mode).indexOf(prev.faction) !== -1 ? prev.faction : null;
+      ui.dep = 'main';
+      reshape(next, prev, 'that ' + FACTIONS[id].name + ' cannot field');
+    },
+    'set-ally': function (id) {
+      var prev = clone(state);
+      var next = clone(state);
+      next.ally = id || null;
+      reshape(next, prev, 'from the previous ally');
+    },
+    'set-dep': function (id) { ui.dep = id; render(); },
+    'unit-inc': function (id) {
+      var u = UNITS[id];
+      if (!u) return;
+      var r = ratioFor(id);
+      var cd = currentDep();
+      if (cd.allowedUnits && cd.allowedUnits.indexOf(id) === -1) return;
+      if (r && !cd.reserve && ratioState(state, r).have >= ratioState(state, r).cap) return;
+      bump(state.units, currentDep().id, id, 1);
+      render();
+    },
+    'unit-dec': function (id) {
+      var d = currentDep().id;
+      if (!qty(state, d, id)) return;
+      bump(state.units, d, id, -1);
+      var q = qty(state, d, id);
+      if (state.opts[d] && state.opts[d][id]) {
+        Object.keys(state.opts[d][id]).forEach(function (o) {
+          state.opts[d][id][o] = Math.min(state.opts[d][id][o], q);
+          if (!state.opts[d][id][o]) delete state.opts[d][id][o];
+        });
+      }
+      render();
+    },
+    'opt-inc': function (id, el) {
+      var d = currentDep().id;
+      var o = el.getAttribute('data-opt');
+      if (optQty(state, d, id, o) >= qty(state, d, id)) return;
+      state.opts[d] = state.opts[d] || {};
+      state.opts[d][id] = state.opts[d][id] || {};
+      state.opts[d][id][o] = optQty(state, d, id, o) + 1;
+      render();
+    },
+    'opt-dec': function (id, el) {
+      var d = currentDep().id;
+      var o = el.getAttribute('data-opt');
+      if (!optQty(state, d, id, o)) return;
+      state.opts[d][id][o]--;
+      if (!state.opts[d][id][o]) delete state.opts[d][id][o];
+      render();
+    },
+    'card-tab': function (id) { ui.cardTab = id; render(); },
+    'card-text': function (id) {
+      if (ui.openCards[id]) delete ui.openCards[id]; else ui.openCards[id] = true;
+      renderCards();
+    },
+    'expand-all': function () {
+      var shown = visibleCardIds().map(function (id) { return CARDS[id]; });
+      var allOpen = shown.every(function (c) { return ui.openCards[c.id]; });
+      shown.forEach(function (c) { if (allOpen) delete ui.openCards[c.id]; else ui.openCards[c.id] = true; });
+      renderCards();
+    },
+    'set-filter': function (id) {
+      var i = ui.setFilter.indexOf(id);
+      if (i === -1) ui.setFilter.push(id);
+      else if (ui.setFilter.length > 1) ui.setFilter.splice(i, 1);
+      render();
+    },
+    'card-toggle': function (id) {
+      var c = CARDS[id];
+      if (!c || c.granted) return;
+      if (state.cards[id]) delete state.cards[id];
+      else {
+        var lim = cardLimit(state, c.type);
+        if (lim != null && pickedCount(state, c.type) >= lim) return;
+        state.cards[id] = 1;
+      }
+      render();
+    },
+    'slot-toggle': function (id, el) {
+      var sl = el.getAttribute('data-slot');
+      var c = CARDS[id];
+      if (!c || !c.slot) return;
+      if (state.slots[sl] === id) delete state.slots[sl];
+      else {
+        Object.keys(state.slots).forEach(function (k) { if (state.slots[k] === id) delete state.slots[k]; });
+        state.slots[sl] = id;
+      }
+      render();
+    },
+    'new-roster': function () {
+      var next = blankState();
+      next.mode = state.mode;
+      next.points = state.points;
+      ui.dep = 'main';
+      replaceState(next, 'Started a new roster.');
+    },
+    'save-roster': function () {
+      var saved = storage.get(LS_SAVED, []) || [];
+      var i = saved.findIndex(function (r) { return r.state && r.state.id === state.id; });
+      var entry = { savedAt: Date.now(), state: clone(state) };
+      if (i === -1) saved.push(entry); else saved[i] = entry;
+      if (storage.set(LS_SAVED, saved)) toast('Saved "' + (state.name || 'Untitled roster') + '" on this device.');
+      else toast('This browser blocked saving. Use Copy roster code to keep it.');
+      renderSaved();
+    },
+    'toggle-saved': function (_, el) {
+      var p = $('#saved-panel');
+      p.hidden = !p.hidden;
+      el.setAttribute('aria-expanded', String(!p.hidden));
+      ui.pendingDelete = null;
+      renderSaved();
+    },
+    'load-saved': function (id) {
+      var saved = storage.get(LS_SAVED, []) || [];
+      var r = saved.filter(function (x) { return x.state && x.state.id === id; })[0];
+      if (!r) return;
+      $('#saved-panel').hidden = true;
+      ui.dep = 'main';
+      replaceState(sanitize(r.state), 'Opened "' + (r.state.name || 'Untitled roster') + '".');
+    },
+    'delete-saved': function (id) {
+      if (ui.pendingDelete !== id) { ui.pendingDelete = id; renderSaved(); return; }
+      var saved = (storage.get(LS_SAVED, []) || []).filter(function (x) { return !(x.state && x.state.id === id); });
+      storage.set(LS_SAVED, saved);
+      ui.pendingDelete = null;
+      renderSaved();
+      toast('Deleted.');
+    },
+    'copy-text': function () { copy(rosterText(state), 'Roster copied as text.'); },
+    'copy-code': function () { copy(encodeRoster(state), 'Roster code copied. Paste it into BPRE Roster to load it.'); },
+    'toggle-import': function () {
+      var box = $('#import-box');
+      box.hidden = !box.hidden;
+      if (!box.hidden) { $('#import-code').value = ''; $('#import-code').focus(); }
+    },
+    'load-code': function () {
+      try {
+        var next = decodeRoster($('#import-code').value);
+        next.id = uid();
+        $('#import-box').hidden = true;
+        ui.dep = 'main';
+        replaceState(next, 'Loaded "' + (next.name || 'Untitled roster') + '".');
+      } catch (e) {
+        toast(e && e.message && e.message.indexOf('BPRE2') !== -1 ? e.message : 'That code could not be read. Check you copied all of it.');
+      }
+    },
+    'share-link': function () {
+      copy(location.href.split('#')[0] + '#' + encodeRoster(state), 'Share link copied.');
+    },
+    'export-json': function () {
+      var blob = new Blob([JSON.stringify({ app: 'bpre-roster', dataVersion: D.version, roster: state }, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (state.name || 'bpre-roster').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+    },
+    'print': function () { window.print(); },
+    'cycle-theme': function () {
+      var next = THEMES[(THEMES.indexOf(currentTheme()) + 1) % THEMES.length];
+      applyTheme(next);
+      toast(THEME_LABELS[next] + '.');
+    },
+    'jump-summary': function () { $('#summary').scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+    'undo': function () {
+      if (!ui.undo) return;
+      state = ui.undo;
+      ui.undo = null;
+      $('#toast').hidden = true;
+      render();
+    }
+  };
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-action]');
+    if (!el || el.disabled) return;
+    var fn = actions[el.getAttribute('data-action')];
+    if (fn) fn(el.getAttribute('data-id'), el, e);
+  });
+
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.matches('[data-toggle]')) {
+      var id = t.getAttribute('data-toggle');
+      var prev = clone(state);
+      var next = clone(state);
+      if (t.checked) next.on[id] = true; else delete next.on[id];
+      if (t.checked && deployments(sanitize(next)).some(function (d) { return d.id === id; })) ui.dep = id;
+      else if (ui.dep === id) ui.dep = 'main';
+      reshape(next, prev, 'from ' + (id === 'qrf' ? 'the QRF' : 'that deployment'));
+    }
+  });
+
+  $('#roster-name').addEventListener('input', function (e) {
+    state.name = e.target.value.slice(0, 60);
+    renderSummary();
+    storage.set(LS_CURRENT, state);
+  });
+
+  $('#custom-points').addEventListener('change', function (e) {
+    var v = parseInt(e.target.value, 10);
+    if (v > 0 && v <= 5000) { state.points = v; render(); }
+    else if (e.target.value !== '') { toast('Enter a points limit between 5 and 5000.'); e.target.value = ''; }
+  });
+
+  $('#import-file').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var o = JSON.parse(reader.result);
+        var next = sanitize(o.roster || o);
+        next.id = uid();
+        ui.dep = 'main';
+        replaceState(next, 'Imported "' + (next.name || 'Untitled roster') + '".');
+      } catch (err) {
+        toast('That file is not a BPRE Roster export.');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  // Hide features the embedded preview frame cannot use.
+  if (EMBEDDED) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-standalone]'), function (el) { el.hidden = true; });
+  }
+
+  // Load a roster from a share link (#BPRE2.xxxx).
+  if (location.hash.indexOf('BPRE2.') !== -1) {
+    try {
+      var fromLink = decodeRoster(decodeURIComponent(location.hash.slice(1)));
+      fromLink.id = uid();
+      var prev = clone(state);
+      state = fromLink;
+      setTimeout(function () { toast('Loaded a shared roster.', prev); }, 0);
+    } catch (e) { /* ignore a bad link */ }
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
+  }
+
+  applyTheme(currentTheme());
+  renderFooter();
+  renderSaved();
+  render();
+
+  // Small API for tests and the console.
+  window.BPRERoster = {
+    getState: function () { return clone(state); },
+    encode: function () { return encodeRoster(state); },
+    decode: decodeRoster,
+    text: function () { return rosterText(state); },
+    issues: function () { return issues(state); },
+    budgets: function () { return budgets(state).map(function (b) { return { id: b.id, used: b.used, limit: b.limit }; }); },
+    granted: function () { return grantedFires(state).map(function (g) { return { card: g.c.id, n: g.n }; }); }
+  };
+})();
+
+</script>
+</body>
+</html>

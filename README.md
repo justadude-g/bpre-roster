@@ -7,6 +7,8 @@ A force builder for **Black Powder Red Earth**. It runs in any browser, needs no
 3. Build each deployment. The app tracks CP per pool, the one-per-100-CP limits, the Muhtasib-to-Shurta ratio, QRF discounts, and upgrades such as respirators and Forward Deployed.
 4. Choose a hand of three unique Intervention cards from any set. Unit Fires cards (Scoria RS, FengHuang-918, Quadrotor) are added automatically; in Phase Line you place one Phase Line Fires card at each line. Faction-emblem cards only appear for forces that include that faction.
 
+Two reference pages sit alongside the builder. **Quick reference** covers the turn sequence, each phase, attacking, line of sight, explosions and the expansion rules, with a search box for finding a rule at the table. **Factions** covers the war, the two blocs, the SPEAR/Aayari restriction, and each faction's background, allies and full unit list with CP costs.
+
 Forces save to your browser. You can copy a force as text for Discord or email, share a link or a short force code that loads it for someone else, export or import a file, or print a one-page force sheet. Light and dark mode follow your device, or set one with the theme button.
 
 ## Use it
@@ -42,6 +44,8 @@ To run it offline, download `dist/bpre-force-builder.html` and open it. It is th
 | `css/style.css` | Styles, including dark mode and a print layout |
 | `js/app.js` | App logic. Plain JavaScript, no build step |
 | `data/data.js` | **All game data**: game types, points presets, factions, units, cards |
+| `data/reference.js` | Quick reference rules and Faction reference text |
+| `assets/factions/` | Faction emblems |
 | `tools/validate-data.mjs` | Checks the data file for mistakes |
 | `tools/build-single.mjs` | Rebuilds `dist/bpre-force-builder.html` |
 | `dist/bpre-force-builder.html` | Single-file offline copy |

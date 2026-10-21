@@ -23,6 +23,12 @@
   function isObj(o) { return o && typeof o === 'object' && !Array.isArray(o); }
 
   var PL = D.pointsLabel || 'CP';
+  var R = window.BPRE_REFERENCE || null;
+  function emblem(fid, cls) {
+    var f = FACTIONS[fid];
+    if (!f || !f.emblem) return '';
+    return '<img class="emblem ' + (cls || '') + '" src="' + esc(f.emblem) + '" alt="" loading="lazy" decoding="async">';
+  }
   var SETS = index(D.sets);
   var MODES = index(D.modes);
   var FACTIONS = index(D.factions);
@@ -333,11 +339,12 @@
         D.factions.filter(function (f) { return f.bloc === b; }).map(function (f) {
           var ok = factionHasUnits(f.id, state.mode);
           var on = f.id === state.faction;
-          return '<button type="button" role="radio" class="faction-card" aria-checked="' + on + '" data-action="set-faction" data-id="' + esc(f.id) + '"' + (ok ? '' : ' disabled') + '>' +
-            '<span class="faction-name">' + esc(f.name) + '</span>' +
+          return '<button type="button" role="radio" class="faction-card has-emblem" aria-checked="' + on + '" data-action="set-faction" data-id="' + esc(f.id) + '"' + (ok ? '' : ' disabled') + '>' +
+            emblem(f.id, 'emblem-lg') +
+            '<span class="faction-text"><span class="faction-name">' + esc(f.name) + '</span>' +
             '<span class="faction-sub">' + esc(f.subtitle || '') + '</span>' +
             (ok ? '' : '<span class="why">No units in ' + esc(modeOf(state).name) + '</span>') +
-            '</button>';
+            '</span></button>';
         }).join('') + '</div></div>';
     }).join('');
 
@@ -346,7 +353,7 @@
     if (choices.length) {
       $('#ally-options').innerHTML = ['<button type="button" role="radio" class="chip" aria-checked="' + (!state.ally) + '" data-action="set-ally" data-id="">None</button>']
         .concat(choices.map(function (a) {
-          return '<button type="button" role="radio" class="chip" aria-checked="' + (state.ally === a) + '" data-action="set-ally" data-id="' + esc(a) + '">' + esc(FACTIONS[a].name) + '</button>';
+          return '<button type="button" role="radio" class="chip chip-emblem" aria-checked="' + (state.ally === a) + '" data-action="set-ally" data-id="' + esc(a) + '">' + emblem(a, 'emblem-xs') + esc(FACTIONS[a].name) + '</button>';
         })).join('');
       var notes = [];
       if (choices.length > 1) notes.push(FACTIONS[state.faction].name + ' can field with ' + choices.map(function (a) { return FACTIONS[a].name; }).join(' or ') + ', never both.');
@@ -389,7 +396,7 @@
     box.innerHTML = groups.map(function (g) {
       var f = FACTIONS[g.fid];
       var heading = f.name + ' · ' + SETS[g.sid].name + (g.fid !== state.faction ? ' (ally)' : '');
-      return '<div class="unit-group"><h3>' + esc(heading) + '</h3><div class="unit-rows">' +
+      return '<div class="unit-group"><h3>' + emblem(g.fid, 'emblem-xs') + esc(heading) + '</h3><div class="unit-rows">' +
         g.list.map(function (u) { return unitRow(u, dep, budget); }).join('') + '</div></div>';
     }).join('');
   }
@@ -522,13 +529,13 @@
   }
 
   function cardHtml(c, q, control, granted) {
-    var emblem = (c.factions || []).map(function (f) { return FACTIONS[f] ? FACTIONS[f].name : f; }).join(', ');
+    var only = (c.factions || []).map(function (f) { return emblem(f, 'emblem-xs') + esc(FACTIONS[f] ? FACTIONS[f].name : f); }).join(', ');
     return '<div class="game-card' + (q ? ' picked' : '') + (granted ? ' granted-card' : '') + (ui.openCards[c.id] ? ' text-open' : '') + '">' +
       '<div class="card-type"><span>' + esc(c.subtype || ({ fires: 'Fires', special: 'Special Intervention' }[c.type] || 'Intervention')) + '</span><span title="' + esc(SETS[c.set] ? SETS[c.set].name : c.set) + '">' + esc(SETS[c.set] ? SETS[c.set].short : c.set) + '</span></div>' +
       '<div class="card-name">' + esc(c.name) + (granted ? ' <span class="mono">×' + q + '</span>' : '') + '</div>' +
       (c.notes ? '<div class="card-notes">' + esc(c.notes) + '</div>' : '') +
       cardTextHtml(c) +
-      '<div class="card-foot"><span class="count">' + (emblem ? esc(emblem) + ' only' : '') + '</span>' + control + '</div>' +
+      '<div class="card-foot"><span class="count only">' + (only ? only + ' only' : '') + '</span>' + control + '</div>' +
       '</div>';
   }
 
@@ -547,7 +554,7 @@
   function renderSummary() {
     var m = modeOf(state);
     $('#h-summary').textContent = state.name || 'Untitled force';
-    $('#sheet-meta').textContent = m.name + ' · ' + forceLabel(state);
+    $('#sheet-meta').innerHTML = '<span class="sheet-emblems">' + forceFactions(state).map(function (f) { return emblem(f, 'emblem-sm'); }).join('') + '</span><span>' + esc(m.name + ' · ' + forceLabel(state)) + '</span>';
     $('#dtg').textContent = dtg(new Date());
 
     var bs = budgets(state);
@@ -644,6 +651,100 @@
     renderSummary();
     storage.set(LS_CURRENT, state);
     storage.set(LS_UI, { cardTab: ui.cardTab, setFilter: ui.setFilter });
+  }
+
+  // ---------- views ----------
+  var VIEWS = ['build', 'reference', 'factions'];
+  function setView(v, keepScroll) {
+    if (VIEWS.indexOf(v) === -1) v = 'build';
+    ui.view = v;
+    VIEWS.forEach(function (id) {
+      $('#view-' + id).hidden = id !== v;
+      $('#nav-' + id).setAttribute('aria-selected', String(id === v));
+    });
+    document.body.setAttribute('data-view', v);
+    if (v === 'reference') renderReference();
+    if (v === 'factions') renderFactionRef();
+    try { history.replaceState(null, '', location.pathname + location.search + (v === 'build' ? '' : '#' + v)); } catch (e) { /* ignore */ }
+    if (!keepScroll) window.scrollTo(0, 0);
+  }
+
+  function highlight(text, q) {
+    var safe = esc(text);
+    if (!q) return safe;
+    var i = text.toLowerCase().indexOf(q);
+    if (i === -1) return safe;
+    return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+  }
+
+  function renderReference() {
+    var box = $('#ref-body');
+    if (!R) { box.innerHTML = '<div class="empty">Reference data is missing (data/reference.js).</div>'; return; }
+    var q = ($('#ref-search').value || '').trim().toLowerCase();
+    var html = '';
+    if (!q) {
+      html += '<section class="ref-strip" aria-label="Turn sequence"><ol class="phase-seq">' +
+        R.phases.map(function (p, i) { return '<li><span class="mono">' + (i < 3 ? i + 1 : '') + '</span>' + esc(p) + '</li>'; }).join('') +
+        '</ol><div class="turn-limits">' + R.turnLimits.map(function (t) {
+          return '<span class="turn-chip' + (t.mode === state.mode ? ' on' : '') + '">' + esc(t.label) + ' <b class="mono">' + t.turns + '</b> turns</span>';
+        }).join('') + '</div></section>';
+    }
+    var shown = 0;
+    html += '<div class="ref-grid">' + R.sections.map(function (sec) {
+      var items = sec.items.filter(function (it) { return !q || (it.term + ' ' + it.text).toLowerCase().indexOf(q) !== -1; });
+      var leadHit = sec.lead && (!q || sec.lead.toLowerCase().indexOf(q) !== -1 || sec.title.toLowerCase().indexOf(q) !== -1);
+      if (q && !items.length && !leadHit) return '';
+      shown += items.length + (leadHit ? 1 : 0);
+      return '<section class="ref-card' + (sec.number ? ' phase' : '') + '" id="ref-' + esc(sec.id) + '">' +
+        '<header><h2>' + (sec.number ? '<span class="phase-num">' + sec.number + '</span>' : '') + esc(sec.title) + '</h2>' +
+        (sec.kicker ? '<span class="ref-kicker">' + esc(sec.kicker) + '</span>' : '') + '</header>' +
+        (sec.lead && leadHit ? '<p class="ref-lead">' + highlight(sec.lead, q) + '</p>' : '') +
+        (items.length ? '<dl>' + items.map(function (it) { return '<div><dt>' + highlight(it.term, q) + '</dt><dd>' + highlight(it.text, q) + '</dd></div>'; }).join('') + '</dl>' : '') +
+        '</section>';
+    }).join('') + '</div>';
+    if (q && !shown) html = '<div class="empty">No rules mention "' + esc(q) + '".</div>';
+    box.innerHTML = html;
+  }
+
+  function renderFactionRef() {
+    var box = $('#faction-body');
+    var html = '';
+    if (R && R.war) html += '<section class="war"><h2>The war</h2><p>' + esc(R.war) + '</p></section>';
+    if (R && R.blocs) {
+      html += '<section class="bloc-map" aria-label="Blocs">' + R.blocs.map(function (b, i) {
+        return (i ? '<div class="vs" aria-hidden="true">VS</div>' : '') +
+          '<div class="bloc-col"><h2>' + esc(b.name) + '</h2><div class="bloc-row">' +
+          b.factions.map(function (fid) {
+            var f = FACTIONS[fid];
+            return f ? '<a class="bloc-faction" href="#f-' + esc(fid) + '" data-action="jump-faction" data-id="' + esc(fid) + '">' + emblem(fid, 'emblem-md') + '<span>' + esc(f.name) + '</span></a>' : '';
+          }).join('') + '</div><p>' + esc(b.note || '') + '</p></div>';
+      }).join('') + '</section>';
+    }
+    if (R && R.restriction) html += '<aside class="restriction"><h2>' + esc(R.restriction.title) + '</h2><p>' + esc(R.restriction.text) + '</p></aside>';
+
+    html += D.factions.map(function (f) {
+      var units = D.units.filter(function (u) { return u.faction === f.id; });
+      var allies = (f.allies || []).filter(function (a) { return FACTIONS[a] && !incompatible(f.id, a); });
+      return '<article class="faction-ref" id="f-' + esc(f.id) + '">' +
+        '<header>' + emblem(f.id, 'emblem-xl') + '<div><span class="bloc-name">' + esc(f.bloc || '') + '</span>' +
+        '<h2>' + esc(f.name) + ' <span class="faction-sub">' + esc(f.subtitle || '') + '</span></h2>' +
+        (f.tagline ? '<p class="tagline">' + esc(f.tagline) + '</p>' : '') + '</div></header>' +
+        (f.lore ? '<p class="lore">' + esc(f.lore) + '</p>' : '') +
+        '<div class="faction-facts"><div><span class="label">Allies</span><div class="chips">' +
+        (allies.length ? allies.map(function (a) { return '<span class="chip chip-emblem static">' + emblem(a, 'emblem-xs') + esc(FACTIONS[a].name) + '</span>'; }).join('') : '<span class="muted">Fields alone</span>') +
+        '</div></div>' + (f.note ? '<p class="fact-note">' + esc(f.note) + '</p>' : '') + '</div>' +
+        '<div class="unit-table-wrap"><table class="unit-table"><thead><tr><th>Unit</th><th>CP</th><th>Move</th><th>Set</th><th class="lim-col">Limits and cards</th></tr></thead><tbody>' +
+        units.map(function (u) {
+          var lim = [];
+          if (u.perPoints) lim.push('1 per ' + u.perPoints + ' ' + PL);
+          var r = ratioFor(u.id); if (r) lim.push('4 per Muhtasib');
+          (u.fires || []).forEach(function (fr) { if (CARDS[fr.card]) lim.push('+' + fr.count + ' ' + CARDS[fr.card].name); });
+          return '<tr><td>' + esc(u.name) + (lim.length ? '<span class="u-lim">' + esc(lim.join(' · ')) + '</span>' : '') + '</td><td class="mono">' + (u.cost == null ? 'TBC' : u.cost) + '</td><td class="mono">' + (u.move ? u.move + '"' : '') + '</td><td>' + setBadge(u.set) + '</td><td class="lim-col">' + esc(lim.join(' · ')) + '</td></tr>';
+        }).join('') + '</tbody></table></div>' +
+        '<button type="button" class="btn primary" data-action="build-with" data-id="' + esc(f.id) + '">Build a ' + esc(f.name) + ' force</button>' +
+        '</article>';
+    }).join('');
+    box.innerHTML = html;
   }
 
   // ---------- toast and undo ----------
@@ -865,6 +966,18 @@
       render();
     },
     'card-tab': function (id) { ui.cardTab = id; render(); },
+    'set-view': function (id) { setView(id); },
+    'jump-faction': function (id, el, e) {
+      if (e) e.preventDefault();
+      var t = document.getElementById('f-' + id);
+      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    'build-with': function (id) {
+      setView('build');
+      if (id !== state.faction && factionHasUnits(id, state.mode)) actions['set-faction'](id);
+      var t = $('#step-faction');
+      if (t) t.scrollIntoView({ block: 'start' });
+    },
     'card-text': function (id) {
       if (ui.openCards[id]) delete ui.openCards[id]; else ui.openCards[id] = true;
       renderCards();
@@ -1057,6 +1170,13 @@
   }
 
   applyTheme(currentTheme());
+  $('#ref-search').addEventListener('input', renderReference);
+  var startView = (location.hash || '').replace('#', '');
+  setView(VIEWS.indexOf(startView) !== -1 ? startView : 'build', true);
+  window.addEventListener('hashchange', function () {
+    var h = (location.hash || '').replace('#', '');
+    if (VIEWS.indexOf(h) !== -1 && h !== ui.view) setView(h);
+  });
   renderFooter();
   renderSaved();
   render();

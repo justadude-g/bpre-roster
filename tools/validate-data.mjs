@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Checks data/data.js for broken references, duplicate ids and missing fields.
 // Usage: node tools/validate-data.mjs
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
@@ -70,6 +70,8 @@ for (const m of D.modes || []) {
 }
 
 for (const f of D.factions || []) {
+  if (f.emblem && !existsSync(join(root, f.emblem))) err(`faction "${f.id}": emblem file "${f.emblem}" not found`);
+  if (!f.emblem) warn(`faction "${f.id}" has no emblem`);
   for (const a of f.allies || []) {
     if (!factions.has(a)) err(`faction "${f.id}": unknown ally "${a}"`);
     else if (!(D.factions.find((x) => x.id === a).allies || []).includes(f.id)) warn(`faction "${f.id}" lists "${a}" as an ally, but not the other way round`);
