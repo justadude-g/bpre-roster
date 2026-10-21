@@ -254,6 +254,7 @@ button, input, textarea { font: inherit; color: inherit; }
 .tab + .tab { border-left: 1px solid var(--line); }
 .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
 .tab[aria-selected="true"] .count { color: var(--bg); }
+#unit-sets { margin-bottom: 10px; }
 .set-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .hint { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
