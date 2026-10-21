@@ -9,7 +9,7 @@ Before you open a pull request, run `node tools/validate-data.mjs`. It must prin
 - Include the source: book and page number, or card name and set.
 - Keep `notes` to a short summary, under about 100 characters. The full effect goes in a card's `text` field.
 - Only add official card or rules wording if you are a maintainer covered by Echelon Software's permission.
-- An `id` is lowercase with hyphens (`cts-recce-raider`), unique and never renamed. Saved rosters and share links refer to it.
+- An `id` is lowercase with hyphens (`cts-recce-raider`), unique and never renamed. Saved forces and share links refer to it.
 
 ## Game types (`modes`)
 

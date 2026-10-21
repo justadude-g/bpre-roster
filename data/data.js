@@ -1,5 +1,5 @@
 /*
- * BPRE Roster game data.
+ * BPRE Force Builder game data.
  *
  * This is the only file you need to edit to add units, fix points or add cards.
  * See CONTRIBUTING.md for the field reference. Run `node tools/validate-data.mjs`

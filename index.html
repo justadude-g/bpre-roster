@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BPRE Roster</title>
+<title>BPRE Force Builder</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Unofficial team builder for Black Powder Red Earth 28mm. Pick a game type and points, choose a faction, build a team and select Intervention and Fires cards.">
+<meta name="description" content="Force builder for Black Powder Red Earth. Pick a game type and CP limit, choose a faction, build your kill team and select Intervention and Fires cards.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Stencil+One&display=swap">
@@ -20,11 +20,11 @@
   <div class="topbar-inner">
     <div class="brand">
       <span class="wordmark">BPRE</span>
-      <span class="brand-sub">Roster</span>
+      <span class="brand-sub">Force Builder</span>
     </div>
     <label class="name-field" for="roster-name">
-      <span class="sr-only">Roster name</span>
-      <input id="roster-name" type="text" maxlength="60" placeholder="Name this roster" autocomplete="off">
+      <span class="sr-only">Force name</span>
+      <input id="roster-name" type="text" maxlength="60" placeholder="Name this force" autocomplete="off">
     </label>
     <div class="top-actions">
       <button type="button" class="btn" data-action="new-roster">New</button>
@@ -35,7 +35,7 @@
   </div>
   <div id="saved-panel" class="saved-panel" hidden>
     <div class="saved-inner">
-      <h2 class="panel-title">Saved rosters</h2>
+      <h2 class="panel-title">Saved forces</h2>
       <ul id="saved-list" class="saved-list"></ul>
     </div>
   </div>
@@ -103,7 +103,7 @@
         <span class="sheet-kicker">Force tasking</span>
         <span class="dtg" id="dtg"></span>
       </div>
-      <h2 class="sheet-title" id="h-summary">Untitled roster</h2>
+      <h2 class="sheet-title" id="h-summary">Untitled force</h2>
       <p class="sheet-meta" id="sheet-meta"></p>
 
       <div id="budgets" class="budgets"></div>
@@ -125,7 +125,7 @@
 
       <div class="sheet-actions no-print">
         <button type="button" class="btn" data-action="copy-text">Copy as text</button>
-        <button type="button" class="btn" data-action="copy-code">Copy roster code</button>
+        <button type="button" class="btn" data-action="copy-code">Copy force code</button>
         <button type="button" class="btn" data-action="toggle-import">Paste code</button>
         <button type="button" class="btn" data-action="share-link" data-standalone>Copy share link</button>
         <button type="button" class="btn" data-action="export-json" data-standalone>Export file</button>
@@ -133,10 +133,10 @@
         <button type="button" class="btn" data-action="print" data-standalone>Print</button>
       </div>
       <div class="import-box no-print" id="import-box" hidden>
-        <label for="import-code" class="label">Paste a roster code</label>
+        <label for="import-code" class="label">Paste a force code</label>
         <textarea id="import-code" rows="3" spellcheck="false" placeholder="BPRE1.eyJ2Ijo..."></textarea>
         <div class="import-actions">
-          <button type="button" class="btn primary" data-action="load-code">Load roster</button>
+          <button type="button" class="btn primary" data-action="load-code">Load force</button>
           <button type="button" class="btn" data-action="toggle-import">Cancel</button>
         </div>
       </div>

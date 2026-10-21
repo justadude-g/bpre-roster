@@ -1,4 +1,4 @@
-/* BPRE Roster. Plain JavaScript, no build step. Game data lives in data/data.js. */
+/* BPRE Force Builder. Plain JavaScript, no build step. Game data lives in data/data.js. */
 (function () {
   'use strict';
 
@@ -543,7 +543,7 @@
 
   function renderSummary() {
     var m = modeOf(state);
-    $('#h-summary').textContent = state.name || 'Untitled roster';
+    $('#h-summary').textContent = state.name || 'Untitled force';
     $('#sheet-meta').textContent = m.name + ' · ' + forceLabel(state);
     $('#dtg').textContent = dtg(new Date());
 
@@ -612,14 +612,14 @@
     $('#saved-count').textContent = saved.length ? String(saved.length) : '';
     var listEl = $('#saved-list');
     if (!saved.length) {
-      listEl.innerHTML = '<li class="saved-empty">No saved rosters yet. Press Save to keep the current one on this device.</li>';
+      listEl.innerHTML = '<li class="saved-empty">No saved forces yet. Press Save to keep the current one on this device.</li>';
       return;
     }
     listEl.innerHTML = saved.slice().sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); }).map(function (r) {
       var s = sanitize(r.state);
       var when = r.savedAt ? new Date(r.savedAt).toLocaleString() : '';
       var confirming = ui.pendingDelete === s.id;
-      return '<li><span class="saved-name">' + esc(s.name || 'Untitled roster') + '</span>' +
+      return '<li><span class="saved-name">' + esc(s.name || 'Untitled force') + '</span>' +
         '<span class="saved-meta">' + esc(modeOf(s).name + ' · ' + forceLabel(s) + ' · ' + when) + '</span>' +
         '<button type="button" class="btn" data-action="load-saved" data-id="' + esc(s.id) + '">Open</button>' +
         '<button type="button" class="btn danger" data-action="delete-saved" data-id="' + esc(s.id) + '">' + (confirming ? 'Confirm delete' : 'Delete') + '</button></li>';
@@ -676,14 +676,14 @@
   function decodeRoster(code) {
     code = String(code || '').trim();
     var m = code.match(/BPRE2\.([A-Za-z0-9_-]+)/);
-    if (!m) throw new Error('That does not look like a roster code. Codes start with BPRE2.');
+    if (!m) throw new Error('That does not look like a force code. Codes start with BPRE2.');
     var o = JSON.parse(b64decode(m[1]));
     return sanitize({ name: o.n, mode: o.m, points: o.p, faction: o.f, ally: o.a, on: o.on, units: o.u, opts: o.o, cards: o.c, slots: o.s });
   }
   function rosterText(s) {
     var m = modeOf(s);
     var lines = [];
-    lines.push((s.name || 'Untitled roster').toUpperCase());
+    lines.push((s.name || 'Untitled force').toUpperCase());
     lines.push(m.name + ' | ' + forceLabel(s));
     budgets(s).forEach(function (b) { lines.push(b.name + ': ' + b.used + '/' + b.limit + ' ' + PL); });
     deployments(s).forEach(function (d) {
@@ -905,15 +905,15 @@
       next.mode = state.mode;
       next.points = state.points;
       ui.dep = 'main';
-      replaceState(next, 'Started a new roster.');
+      replaceState(next, 'Started a new force.');
     },
     'save-roster': function () {
       var saved = storage.get(LS_SAVED, []) || [];
       var i = saved.findIndex(function (r) { return r.state && r.state.id === state.id; });
       var entry = { savedAt: Date.now(), state: clone(state) };
       if (i === -1) saved.push(entry); else saved[i] = entry;
-      if (storage.set(LS_SAVED, saved)) toast('Saved "' + (state.name || 'Untitled roster') + '" on this device.');
-      else toast('This browser blocked saving. Use Copy roster code to keep it.');
+      if (storage.set(LS_SAVED, saved)) toast('Saved "' + (state.name || 'Untitled force') + '" on this device.');
+      else toast('This browser blocked saving. Use Copy force code to keep it.');
       renderSaved();
     },
     'toggle-saved': function (_, el) {
@@ -929,7 +929,7 @@
       if (!r) return;
       $('#saved-panel').hidden = true;
       ui.dep = 'main';
-      replaceState(sanitize(r.state), 'Opened "' + (r.state.name || 'Untitled roster') + '".');
+      replaceState(sanitize(r.state), 'Opened "' + (r.state.name || 'Untitled force') + '".');
     },
     'delete-saved': function (id) {
       if (ui.pendingDelete !== id) { ui.pendingDelete = id; renderSaved(); return; }
@@ -939,8 +939,8 @@
       renderSaved();
       toast('Deleted.');
     },
-    'copy-text': function () { copy(rosterText(state), 'Roster copied as text.'); },
-    'copy-code': function () { copy(encodeRoster(state), 'Roster code copied. Paste it into BPRE Roster to load it.'); },
+    'copy-text': function () { copy(rosterText(state), 'Force copied as text.'); },
+    'copy-code': function () { copy(encodeRoster(state), 'Force code copied. Paste it into BPRE Force Builder to load it.'); },
     'toggle-import': function () {
       var box = $('#import-box');
       box.hidden = !box.hidden;
@@ -952,7 +952,7 @@
         next.id = uid();
         $('#import-box').hidden = true;
         ui.dep = 'main';
-        replaceState(next, 'Loaded "' + (next.name || 'Untitled roster') + '".');
+        replaceState(next, 'Loaded "' + (next.name || 'Untitled force') + '".');
       } catch (e) {
         toast(e && e.message && e.message.indexOf('BPRE2') !== -1 ? e.message : 'That code could not be read. Check you copied all of it.');
       }
@@ -961,10 +961,10 @@
       copy(location.href.split('#')[0] + '#' + encodeRoster(state), 'Share link copied.');
     },
     'export-json': function () {
-      var blob = new Blob([JSON.stringify({ app: 'bpre-roster', dataVersion: D.version, roster: state }, null, 2)], { type: 'application/json' });
+      var blob = new Blob([JSON.stringify({ app: 'bpre-force-builder', dataVersion: D.version, force: state }, null, 2)], { type: 'application/json' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = (state.name || 'bpre-roster').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '.json';
+      a.download = (state.name || 'bpre-force').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '.json';
       document.body.appendChild(a);
       a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
@@ -1024,12 +1024,12 @@
     reader.onload = function () {
       try {
         var o = JSON.parse(reader.result);
-        var next = sanitize(o.roster || o);
+        var next = sanitize(o.force || o.roster || o);
         next.id = uid();
         ui.dep = 'main';
-        replaceState(next, 'Imported "' + (next.name || 'Untitled roster') + '".');
+        replaceState(next, 'Imported "' + (next.name || 'Untitled force') + '".');
       } catch (err) {
-        toast('That file is not a BPRE Roster export.');
+        toast('That file is not a BPRE Force Builder export.');
       }
       e.target.value = '';
     };
@@ -1048,7 +1048,7 @@
       fromLink.id = uid();
       var prev = clone(state);
       state = fromLink;
-      setTimeout(function () { toast('Loaded a shared roster.', prev); }, 0);
+      setTimeout(function () { toast('Loaded a shared force.', prev); }, 0);
     } catch (e) { /* ignore a bad link */ }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
   }

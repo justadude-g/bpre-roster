@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BPRE Roster</title>
+<title>BPRE Force Builder</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Unofficial team builder for Black Powder Red Earth 28mm. Pick a game type and points, choose a faction, build a team and select Intervention and Fires cards.">
+<meta name="description" content="Force builder for Black Powder Red Earth. Pick a game type and CP limit, choose a faction, build your kill team and select Intervention and Fires cards.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Stencil+One&display=swap">
@@ -541,11 +541,11 @@ button, input, textarea { font: inherit; color: inherit; }
   <div class="topbar-inner">
     <div class="brand">
       <span class="wordmark">BPRE</span>
-      <span class="brand-sub">Roster</span>
+      <span class="brand-sub">Force Builder</span>
     </div>
     <label class="name-field" for="roster-name">
-      <span class="sr-only">Roster name</span>
-      <input id="roster-name" type="text" maxlength="60" placeholder="Name this roster" autocomplete="off">
+      <span class="sr-only">Force name</span>
+      <input id="roster-name" type="text" maxlength="60" placeholder="Name this force" autocomplete="off">
     </label>
     <div class="top-actions">
       <button type="button" class="btn" data-action="new-roster">New</button>
@@ -556,7 +556,7 @@ button, input, textarea { font: inherit; color: inherit; }
   </div>
   <div id="saved-panel" class="saved-panel" hidden>
     <div class="saved-inner">
-      <h2 class="panel-title">Saved rosters</h2>
+      <h2 class="panel-title">Saved forces</h2>
       <ul id="saved-list" class="saved-list"></ul>
     </div>
   </div>
@@ -624,7 +624,7 @@ button, input, textarea { font: inherit; color: inherit; }
         <span class="sheet-kicker">Force tasking</span>
         <span class="dtg" id="dtg"></span>
       </div>
-      <h2 class="sheet-title" id="h-summary">Untitled roster</h2>
+      <h2 class="sheet-title" id="h-summary">Untitled force</h2>
       <p class="sheet-meta" id="sheet-meta"></p>
 
       <div id="budgets" class="budgets"></div>
@@ -646,7 +646,7 @@ button, input, textarea { font: inherit; color: inherit; }
 
       <div class="sheet-actions no-print">
         <button type="button" class="btn" data-action="copy-text">Copy as text</button>
-        <button type="button" class="btn" data-action="copy-code">Copy roster code</button>
+        <button type="button" class="btn" data-action="copy-code">Copy force code</button>
         <button type="button" class="btn" data-action="toggle-import">Paste code</button>
         <button type="button" class="btn" data-action="share-link" data-standalone>Copy share link</button>
         <button type="button" class="btn" data-action="export-json" data-standalone>Export file</button>
@@ -654,10 +654,10 @@ button, input, textarea { font: inherit; color: inherit; }
         <button type="button" class="btn" data-action="print" data-standalone>Print</button>
       </div>
       <div class="import-box no-print" id="import-box" hidden>
-        <label for="import-code" class="label">Paste a roster code</label>
+        <label for="import-code" class="label">Paste a force code</label>
         <textarea id="import-code" rows="3" spellcheck="false" placeholder="BPRE1.eyJ2Ijo..."></textarea>
         <div class="import-actions">
-          <button type="button" class="btn primary" data-action="load-code">Load roster</button>
+          <button type="button" class="btn primary" data-action="load-code">Load force</button>
           <button type="button" class="btn" data-action="toggle-import">Cancel</button>
         </div>
       </div>
@@ -682,7 +682,7 @@ button, input, textarea { font: inherit; color: inherit; }
 
 <script>
 /*
- * BPRE Roster game data.
+ * BPRE Force Builder game data.
  *
  * This is the only file you need to edit to add units, fix points or add cards.
  * See CONTRIBUTING.md for the field reference. Run `node tools/validate-data.mjs`
@@ -917,7 +917,7 @@ window.BPRE_DATA = {
 
 </script>
 <script>
-/* BPRE Roster. Plain JavaScript, no build step. Game data lives in data/data.js. */
+/* BPRE Force Builder. Plain JavaScript, no build step. Game data lives in data/data.js. */
 (function () {
   'use strict';
 
@@ -1462,7 +1462,7 @@ window.BPRE_DATA = {
 
   function renderSummary() {
     var m = modeOf(state);
-    $('#h-summary').textContent = state.name || 'Untitled roster';
+    $('#h-summary').textContent = state.name || 'Untitled force';
     $('#sheet-meta').textContent = m.name + ' · ' + forceLabel(state);
     $('#dtg').textContent = dtg(new Date());
 
@@ -1531,14 +1531,14 @@ window.BPRE_DATA = {
     $('#saved-count').textContent = saved.length ? String(saved.length) : '';
     var listEl = $('#saved-list');
     if (!saved.length) {
-      listEl.innerHTML = '<li class="saved-empty">No saved rosters yet. Press Save to keep the current one on this device.</li>';
+      listEl.innerHTML = '<li class="saved-empty">No saved forces yet. Press Save to keep the current one on this device.</li>';
       return;
     }
     listEl.innerHTML = saved.slice().sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); }).map(function (r) {
       var s = sanitize(r.state);
       var when = r.savedAt ? new Date(r.savedAt).toLocaleString() : '';
       var confirming = ui.pendingDelete === s.id;
-      return '<li><span class="saved-name">' + esc(s.name || 'Untitled roster') + '</span>' +
+      return '<li><span class="saved-name">' + esc(s.name || 'Untitled force') + '</span>' +
         '<span class="saved-meta">' + esc(modeOf(s).name + ' · ' + forceLabel(s) + ' · ' + when) + '</span>' +
         '<button type="button" class="btn" data-action="load-saved" data-id="' + esc(s.id) + '">Open</button>' +
         '<button type="button" class="btn danger" data-action="delete-saved" data-id="' + esc(s.id) + '">' + (confirming ? 'Confirm delete' : 'Delete') + '</button></li>';
@@ -1595,14 +1595,14 @@ window.BPRE_DATA = {
   function decodeRoster(code) {
     code = String(code || '').trim();
     var m = code.match(/BPRE2\.([A-Za-z0-9_-]+)/);
-    if (!m) throw new Error('That does not look like a roster code. Codes start with BPRE2.');
+    if (!m) throw new Error('That does not look like a force code. Codes start with BPRE2.');
     var o = JSON.parse(b64decode(m[1]));
     return sanitize({ name: o.n, mode: o.m, points: o.p, faction: o.f, ally: o.a, on: o.on, units: o.u, opts: o.o, cards: o.c, slots: o.s });
   }
   function rosterText(s) {
     var m = modeOf(s);
     var lines = [];
-    lines.push((s.name || 'Untitled roster').toUpperCase());
+    lines.push((s.name || 'Untitled force').toUpperCase());
     lines.push(m.name + ' | ' + forceLabel(s));
     budgets(s).forEach(function (b) { lines.push(b.name + ': ' + b.used + '/' + b.limit + ' ' + PL); });
     deployments(s).forEach(function (d) {
@@ -1824,15 +1824,15 @@ window.BPRE_DATA = {
       next.mode = state.mode;
       next.points = state.points;
       ui.dep = 'main';
-      replaceState(next, 'Started a new roster.');
+      replaceState(next, 'Started a new force.');
     },
     'save-roster': function () {
       var saved = storage.get(LS_SAVED, []) || [];
       var i = saved.findIndex(function (r) { return r.state && r.state.id === state.id; });
       var entry = { savedAt: Date.now(), state: clone(state) };
       if (i === -1) saved.push(entry); else saved[i] = entry;
-      if (storage.set(LS_SAVED, saved)) toast('Saved "' + (state.name || 'Untitled roster') + '" on this device.');
-      else toast('This browser blocked saving. Use Copy roster code to keep it.');
+      if (storage.set(LS_SAVED, saved)) toast('Saved "' + (state.name || 'Untitled force') + '" on this device.');
+      else toast('This browser blocked saving. Use Copy force code to keep it.');
       renderSaved();
     },
     'toggle-saved': function (_, el) {
@@ -1848,7 +1848,7 @@ window.BPRE_DATA = {
       if (!r) return;
       $('#saved-panel').hidden = true;
       ui.dep = 'main';
-      replaceState(sanitize(r.state), 'Opened "' + (r.state.name || 'Untitled roster') + '".');
+      replaceState(sanitize(r.state), 'Opened "' + (r.state.name || 'Untitled force') + '".');
     },
     'delete-saved': function (id) {
       if (ui.pendingDelete !== id) { ui.pendingDelete = id; renderSaved(); return; }
@@ -1858,8 +1858,8 @@ window.BPRE_DATA = {
       renderSaved();
       toast('Deleted.');
     },
-    'copy-text': function () { copy(rosterText(state), 'Roster copied as text.'); },
-    'copy-code': function () { copy(encodeRoster(state), 'Roster code copied. Paste it into BPRE Roster to load it.'); },
+    'copy-text': function () { copy(rosterText(state), 'Force copied as text.'); },
+    'copy-code': function () { copy(encodeRoster(state), 'Force code copied. Paste it into BPRE Force Builder to load it.'); },
     'toggle-import': function () {
       var box = $('#import-box');
       box.hidden = !box.hidden;
@@ -1871,7 +1871,7 @@ window.BPRE_DATA = {
         next.id = uid();
         $('#import-box').hidden = true;
         ui.dep = 'main';
-        replaceState(next, 'Loaded "' + (next.name || 'Untitled roster') + '".');
+        replaceState(next, 'Loaded "' + (next.name || 'Untitled force') + '".');
       } catch (e) {
         toast(e && e.message && e.message.indexOf('BPRE2') !== -1 ? e.message : 'That code could not be read. Check you copied all of it.');
       }
@@ -1880,10 +1880,10 @@ window.BPRE_DATA = {
       copy(location.href.split('#')[0] + '#' + encodeRoster(state), 'Share link copied.');
     },
     'export-json': function () {
-      var blob = new Blob([JSON.stringify({ app: 'bpre-roster', dataVersion: D.version, roster: state }, null, 2)], { type: 'application/json' });
+      var blob = new Blob([JSON.stringify({ app: 'bpre-force-builder', dataVersion: D.version, force: state }, null, 2)], { type: 'application/json' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = (state.name || 'bpre-roster').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '.json';
+      a.download = (state.name || 'bpre-force').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() + '.json';
       document.body.appendChild(a);
       a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
@@ -1943,12 +1943,12 @@ window.BPRE_DATA = {
     reader.onload = function () {
       try {
         var o = JSON.parse(reader.result);
-        var next = sanitize(o.roster || o);
+        var next = sanitize(o.force || o.roster || o);
         next.id = uid();
         ui.dep = 'main';
-        replaceState(next, 'Imported "' + (next.name || 'Untitled roster') + '".');
+        replaceState(next, 'Imported "' + (next.name || 'Untitled force') + '".');
       } catch (err) {
-        toast('That file is not a BPRE Roster export.');
+        toast('That file is not a BPRE Force Builder export.');
       }
       e.target.value = '';
     };
@@ -1967,7 +1967,7 @@ window.BPRE_DATA = {
       fromLink.id = uid();
       var prev = clone(state);
       state = fromLink;
-      setTimeout(function () { toast('Loaded a shared roster.', prev); }, 0);
+      setTimeout(function () { toast('Loaded a shared force.', prev); }, 0);
     } catch (e) { /* ignore a bad link */ }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
   }
