@@ -18,7 +18,7 @@ Before you open a pull request, run `node tools/validate-data.mjs`. It must prin
 | `id`, `name`, `blurb` | Identifier, display name, one-line description |
 | `presets` | Kill team CP limits offered, each `{ points, label }`. The label names the taskings that use it. Players can also type a custom limit |
 | `defaultPoints` | Which preset is picked first |
-| `unitSets` | Sets whose units can be taken, e.g. `["core", "phaseline"]` |
+| `unitSets` | Sets whose units can be taken. Every game type currently allows all three |
 | `deployments` | Extra CP pools, each `{ id, name, points, note, optional }`. Phase Line uses these for reinforcements; Spearhead uses an optional one for the Specialist Reserve |
 | `fireSlots` | Phase Line Fires placements, each `{ id, name }`. One card per slot |
 | `qrf` | `false` where the Quick Reaction Force is not allowed |
@@ -34,6 +34,8 @@ The top-level `qrf` object sets the QRF discount and minimum cost.
 | `bloc` | Cold Harbor bloc or Hongbin bloc. Used to group the faction buttons |
 | `allies` | Factions that can field alongside this one. A force is one faction plus at most one ally |
 | `note` | Optional restriction shown to the player |
+
+The top-level `incompatible` list holds faction pairs that can never be in one force, such as `["spear", "aayari"]`. It overrides `allies`.
 
 ## Units (`units`)
 

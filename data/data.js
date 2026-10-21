@@ -13,7 +13,7 @@
  * rules text from the books or cards into this file.
  */
 window.BPRE_DATA = {
-  version: "0.5.0",
+  version: "0.6.0",
   pointsLabel: "CP",
   // Set this to your GitHub repo URL so the app can link to issues.
   repoUrl: "https://github.com/justadude-g/bpre-roster",
@@ -26,7 +26,7 @@ window.BPRE_DATA = {
 
   // Game types.
   //   presets:      points limits offered for the main kill team, with the taskings that use them
-  //   unitSets:     which sets' units can be taken (Spearhead units work in every game type)
+  //   unitSets:     which sets' units can be taken (every unit works in every game type)
   //   deployments:  extra CP pools on top of the main kill team
   //   fireSlots:    Phase Line Fires placements (one card per slot); optional ones get a toggle
   //   deployments:  reserve: true skips the 1-per-100 and ratio limits; allowedUnits limits what it can hold
@@ -43,7 +43,7 @@ window.BPRE_DATA = {
         { points: 200, label: "Carcass Wraith, assaulter" }
       ],
       defaultPoints: 150,
-      unitSets: ["core", "spearhead"],
+      unitSets: ["core", "phaseline", "spearhead"],
       deployments: [],
       interventionLimit: 3,
       verified: true
@@ -107,6 +107,11 @@ window.BPRE_DATA = {
     { id: "hongbin", name: "Hongbin", subtitle: "Kinetic Forces / Alloy Security", bloc: "Hongbin bloc", allies: ["aayari", "spear"] },
     { id: "aayari", name: "Aayari Network", subtitle: "The Aayar Guard", bloc: "Hongbin bloc", allies: ["hongbin"] },
     { id: "spear", name: "SPEAR Brigade", subtitle: "Qasran special mission unit", bloc: "Hongbin bloc", allies: ["hongbin"], note: "SPEAR and the Aayari Network never share a battlespace. If one earns reinforcements, the other can only come on once the first is wiped out." }
+  ],
+
+  // Factions that can never be in the same force, whatever the allies lists say.
+  incompatible: [
+    ["spear", "aayari"]
   ],
 
   // Units.

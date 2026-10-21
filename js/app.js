@@ -52,10 +52,13 @@
     var m = MODES[mid];
     return D.units.some(function (u) { return u.faction === fid && m.unitSets.indexOf(u.set) !== -1; });
   }
+  function incompatible(a, b) {
+    return (D.incompatible || []).some(function (pair) { return pair.indexOf(a) !== -1 && pair.indexOf(b) !== -1; });
+  }
   function allyChoices(fid, mid) {
     var f = FACTIONS[fid];
     if (!f) return [];
-    return (f.allies || []).filter(function (a) { return FACTIONS[a] && factionHasUnits(a, mid); });
+    return (f.allies || []).filter(function (a) { return FACTIONS[a] && a !== fid && !incompatible(fid, a) && factionHasUnits(a, mid); });
   }
   function forceFactions(s) {
     var out = [];

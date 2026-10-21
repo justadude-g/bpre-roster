@@ -76,6 +76,14 @@ for (const f of D.factions || []) {
   }
 }
 
+for (const pair of D.incompatible || []) {
+  if (!Array.isArray(pair) || pair.length !== 2) err('incompatible: each entry must be a pair of faction ids');
+  for (const f of pair || []) if (!factions.has(f)) err(`incompatible: unknown faction "${f}"`);
+  const [a, b] = pair || [];
+  const fa = (D.factions || []).find((x) => x.id === a);
+  if (fa && (fa.allies || []).includes(b)) warn(`faction "${a}" lists "${b}" as an ally, but they are incompatible; the app will hide that pairing`);
+}
+
 for (const o of D.options || []) {
   if (!isInt(o.cost)) err(`option "${o.id}": cost must be a whole number`);
   for (const m of o.modes || []) if (!modeIds.has(m)) err(`option "${o.id}": unknown mode "${m}"`);
