@@ -9,7 +9,7 @@ A force builder for **Black Powder Red Earth**. It runs in any browser, needs no
 
 Two reference pages sit alongside the builder. **Quick reference** covers the turn sequence, each phase, attacking, line of sight, explosions and the expansion rules, with a search box for finding a rule at the table. **Factions** covers the war, the two blocs, the SPEAR/Aayari restriction, and each faction's background, allies and full unit list with CP costs.
 
-Forces save to your browser. You can copy a force as text for Discord or email, share a link or a short force code that loads it for someone else, export or import a file, or print a one-page force sheet. Light and dark mode follow your device, or set one with the theme button.
+Forces save to your browser. You can copy a force as text for Discord or email, share a link or a short force code that loads it for someone else, export or import a file, or print a one-page force sheet. It follows your device's light or dark setting by default; the theme button switches to light, then dark, and remembers the choice.
 
 ## Use it
 

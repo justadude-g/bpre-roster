@@ -667,8 +667,12 @@ mark { background: var(--accent-soft); color: var(--ink); border-radius: 2px; pa
 
 </style>
 <script>
-  // Apply a saved theme before first paint so the page doesn't flash.
-  try { var t = localStorage.getItem('bpre-roster:theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  // Match the device by default. Apply the saved choice before first paint so the page doesn't flash.
+  (function () {
+    var t = 'auto';
+    try { var s = localStorage.getItem('bpre-roster:theme'); if (s === 'light' || s === 'dark' || s === 'auto') t = s; } catch (e) {}
+    if (t !== 'auto') document.documentElement.setAttribute('data-theme', t);
+  })();
 </script>
 </head>
 <body>
@@ -858,7 +862,7 @@ mark { background: var(--accent-soft); color: var(--ink); border-radius: 2px; pa
  * rules text from the books or cards into this file.
  */
 window.BPRE_DATA = {
-  version: "0.7.1",
+  version: "0.7.3",
   pointsLabel: "CP",
   // Set this to your GitHub repo URL so the app can link to issues.
   repoUrl: "https://github.com/justadude-g/bpre-roster",
@@ -2128,7 +2132,7 @@ window.BPRE_REFERENCE = {
   function applyTheme(t) {
     if (t === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
-    try { if (t === 'auto') window.localStorage.removeItem(LS_THEME); else window.localStorage.setItem(LS_THEME, t); } catch (e) { /* ignore */ }
+    try { window.localStorage.setItem(LS_THEME, t); } catch (e) { /* ignore */ }
     var btn = $('#theme-btn');
     btn.innerHTML = THEME_ICONS[t];
     btn.setAttribute('aria-label', THEME_LABELS[t]);

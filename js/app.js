@@ -874,7 +874,7 @@
   function applyTheme(t) {
     if (t === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
-    try { if (t === 'auto') window.localStorage.removeItem(LS_THEME); else window.localStorage.setItem(LS_THEME, t); } catch (e) { /* ignore */ }
+    try { window.localStorage.setItem(LS_THEME, t); } catch (e) { /* ignore */ }
     var btn = $('#theme-btn');
     btn.innerHTML = THEME_ICONS[t];
     btn.setAttribute('aria-label', THEME_LABELS[t]);

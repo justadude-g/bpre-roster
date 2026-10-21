@@ -11,8 +11,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Stencil+One&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <script>
-  // Apply a saved theme before first paint so the page doesn't flash.
-  try { var t = localStorage.getItem('bpre-roster:theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  // Match the device by default. Apply the saved choice before first paint so the page doesn't flash.
+  (function () {
+    var t = 'auto';
+    try { var s = localStorage.getItem('bpre-roster:theme'); if (s === 'light' || s === 'dark' || s === 'auto') t = s; } catch (e) {}
+    if (t !== 'auto') document.documentElement.setAttribute('data-theme', t);
+  })();
 </script>
 </head>
 <body>
