@@ -275,6 +275,7 @@
     dep: 'main',
     cardTab: ['fires', 'special'].indexOf(savedUi.cardTab) !== -1 ? savedUi.cardTab : 'intervention',
     setFilter: Array.isArray(savedUi.setFilter) ? savedUi.setFilter.filter(function (id) { return SETS[id]; }) : [],
+    unitSets: Array.isArray(savedUi.unitSets) ? savedUi.unitSets.filter(function (id) { return SETS[id]; }) : [],
     undo: null,
     pendingDelete: null,
     openCards: {}
@@ -368,6 +369,7 @@
     var tabs = $('#dep-tabs');
     if (!state.faction) {
       tabs.innerHTML = '';
+      $('#unit-sets').innerHTML = '';
       $('#dep-note').textContent = '';
       box.innerHTML = '<div class="empty">Choose a faction in step 2 to see its units.</div>';
       return;
@@ -388,18 +390,26 @@
     var budget = budgetOf(state, dep.id);
     var groups = [];
     forceFactions(state).forEach(function (fid) {
-      modeOf(state).unitSets.forEach(function (sid) {
-        var list = unitsAvailable(state).filter(function (u) { return u.faction === fid && u.set === sid && (!dep.allowedUnits || dep.allowedUnits.indexOf(u.id) !== -1); });
-        if (list.length) groups.push({ fid: fid, sid: sid, list: list });
+      var list = unitsAvailable(state).filter(function (u) {
+        return u.faction === fid && (!ui.unitSets.length || ui.unitSets.indexOf(u.set) !== -1) && (!dep.allowedUnits || dep.allowedUnits.indexOf(u.id) !== -1);
       });
+      if (list.length) groups.push({ fid: fid, list: list });
     });
 
-    box.innerHTML = groups.map(function (g) {
+    var order = ['all', 'core', 'spearhead', 'phaseline'];
+    var chips = '<div class="set-filter" id="unit-set-filter" role="group" aria-label="Filter units by expansion">' + order.map(function (id) {
+      var on = id === 'all' ? !ui.unitSets.length : ui.unitSets.indexOf(id) !== -1;
+      var name = id === 'all' ? 'All' : id === 'core' ? 'Core' : SETS[id].name;
+      return '<button type="button" class="chip" aria-pressed="' + on + '" data-action="unit-set" data-id="' + id + '">' + esc(name) + '</button>';
+    }).join('') + '</div>';
+
+    $('#unit-sets').innerHTML = chips;
+    box.innerHTML = (groups.length ? groups.map(function (g) {
       var f = FACTIONS[g.fid];
-      var heading = f.name + ' · ' + SETS[g.sid].name + (g.fid !== state.faction ? ' (ally)' : '');
+      var heading = f.name + (g.fid !== state.faction ? ' (ally)' : '');
       return '<div class="unit-group"><h3>' + emblem(g.fid, 'emblem-xs') + esc(heading) + '</h3><div class="unit-rows">' +
         g.list.map(function (u) { return unitRow(u, dep, budget); }).join('') + '</div></div>';
-    }).join('');
+    }).join('') : '<div class="empty">No units from this expansion for this faction.</div>');
   }
 
   function unitRow(u, dep, budget) {
@@ -651,7 +661,7 @@
     renderCards();
     renderSummary();
     storage.set(LS_CURRENT, state);
-    storage.set(LS_UI, { cardTab: ui.cardTab, setFilter: ui.setFilter });
+    storage.set(LS_UI, { cardTab: ui.cardTab, setFilter: ui.setFilter, unitSets: ui.unitSets });
   }
 
   // ---------- views ----------
@@ -988,6 +998,15 @@
       var allOpen = shown.every(function (c) { return ui.openCards[c.id]; });
       shown.forEach(function (c) { if (allOpen) delete ui.openCards[c.id]; else ui.openCards[c.id] = true; });
       renderCards();
+    },
+    'unit-set': function (id) {
+      if (id === 'all') ui.unitSets = [];
+      else {
+        var i = ui.unitSets.indexOf(id);
+        if (i === -1) ui.unitSets.push(id); else ui.unitSets.splice(i, 1);
+        if (ui.unitSets.length >= Object.keys(SETS).length) ui.unitSets = [];
+      }
+      render();
     },
     'set-filter': function (id) {
       var i = ui.setFilter.indexOf(id);
