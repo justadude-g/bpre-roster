@@ -696,7 +696,7 @@ button, input, textarea { font: inherit; color: inherit; }
  * rules text from the books or cards into this file.
  */
 window.BPRE_DATA = {
-  version: "0.4.0",
+  version: "0.5.0",
   pointsLabel: "CP",
   // Set this to your GitHub repo URL so the app can link to issues.
   repoUrl: "https://github.com/justadude-g/bpre-roster",
@@ -709,7 +709,7 @@ window.BPRE_DATA = {
 
   // Game types.
   //   presets:      points limits offered for the main kill team, with the taskings that use them
-  //   unitSets:     which sets' units can be taken
+  //   unitSets:     which sets' units can be taken (Spearhead units work in every game type)
   //   deployments:  extra CP pools on top of the main kill team
   //   fireSlots:    Phase Line Fires placements (one card per slot); optional ones get a toggle
   //   deployments:  reserve: true skips the 1-per-100 and ratio limits; allowedUnits limits what it can hold
@@ -726,7 +726,7 @@ window.BPRE_DATA = {
         { points: 200, label: "Carcass Wraith, assaulter" }
       ],
       defaultPoints: 150,
-      unitSets: ["core"],
+      unitSets: ["core", "spearhead"],
       deployments: [],
       interventionLimit: 3,
       verified: true
@@ -739,7 +739,7 @@ window.BPRE_DATA = {
         { points: 200, label: "Initial deployment" }
       ],
       defaultPoints: 200,
-      unitSets: ["core", "phaseline"],
+      unitSets: ["core", "phaseline", "spearhead"],
       deployments: [
         { id: "pl1", name: "Phase Line 1", points: 150, note: "Deploys when Phase Line 1 is breached." },
         { id: "pl2", name: "Phase Line 2", points: 150, note: "Deploys when Phase Line 2 is breached." }
@@ -756,7 +756,7 @@ window.BPRE_DATA = {
     {
       id: "spearhead",
       name: "Spearhead",
-      blurb: "Final phase of the Awbari Civil War, with Nitto and SPEAR. Turn limit 10.",
+      blurb: "Final phase of the Awbari Civil War. Turn limit 10.",
       presets: [
         { points: 200, label: "Combat Patrol" },
         { points: 350, label: "Fighting Position, Command Net, Forward Observer Post, ESM Site" }
