@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BPRE Roster</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Unofficial team builder for Black Powder Red Earth 28mm. Pick a game type and points, choose a faction, build a team and select Intervention and Fires cards.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Stencil+One&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Apply a saved theme before first paint so the page doesn't flash.
+  try { var t = localStorage.getItem('bpre-roster:theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="wordmark">BPRE</span>
+      <span class="brand-sub">Roster</span>
+    </div>
+    <label class="name-field" for="roster-name">
+      <span class="sr-only">Roster name</span>
+      <input id="roster-name" type="text" maxlength="60" placeholder="Name this roster" autocomplete="off">
+    </label>
+    <div class="top-actions">
+      <button type="button" class="btn" data-action="new-roster">New</button>
+      <button type="button" class="btn" data-action="save-roster">Save</button>
+      <button type="button" class="btn" data-action="toggle-saved" aria-expanded="false" aria-controls="saved-panel">Saved <span id="saved-count" class="count"></span></button>
+      <button type="button" class="btn theme-btn" data-action="cycle-theme" id="theme-btn" aria-label="Theme: match device" title="Theme: match device"></button>
+    </div>
+  </div>
+  <div id="saved-panel" class="saved-panel" hidden>
+    <div class="saved-inner">
+      <h2 class="panel-title">Saved rosters</h2>
+      <ul id="saved-list" class="saved-list"></ul>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <div class="builder">
+    <section class="step" id="step-mode" aria-labelledby="h-mode">
+      <h2 class="step-title" id="h-mode"><span class="step-num">1</span>Game type and points</h2>
+      <div id="mode-options" class="mode-grid" role="radiogroup" aria-label="Game type"></div>
+      <div class="points-block">
+        <span class="label" id="points-label">Kill team CP</span>
+        <div class="points-row">
+          <div id="points-options" class="presets" role="radiogroup" aria-labelledby="points-label"></div>
+          <label class="custom-points" for="custom-points">
+            <span>Custom</span>
+            <input id="custom-points" type="number" min="5" max="2000" step="5" inputmode="numeric">
+          </label>
+        </div>
+      </div>
+      <div id="extras" class="extras"></div>
+    </section>
+
+    <section class="step" id="step-faction" aria-labelledby="h-faction">
+      <h2 class="step-title" id="h-faction"><span class="step-num">2</span>Faction</h2>
+      <div id="faction-options" class="faction-grid" role="radiogroup" aria-label="Faction"></div>
+      <div id="ally-block" class="ally-block" hidden>
+        <span class="label">Allied faction</span>
+        <div id="ally-options" class="chips" role="radiogroup" aria-label="Allied faction"></div>
+        <p id="ally-note" class="hint"></p>
+      </div>
+    </section>
+
+    <section class="step" id="step-team" aria-labelledby="h-team">
+      <h2 class="step-title" id="h-team"><span class="step-num">3</span>Team</h2>
+      <div id="dep-tabs" class="dep-tabs" role="tablist" aria-label="Deployment"></div>
+      <p id="dep-note" class="hint"></p>
+      <div id="unit-list" class="unit-list"></div>
+    </section>
+
+    <section class="step" id="step-cards" aria-labelledby="h-cards">
+      <h2 class="step-title" id="h-cards"><span class="step-num">4</span>Cards</h2>
+      <div class="card-controls">
+        <div class="tabs" role="tablist" aria-label="Card type">
+          <button type="button" role="tab" class="tab" id="tab-intervention" data-action="card-tab" data-id="intervention">Intervention <span class="count" id="count-intervention"></span></button>
+          <button type="button" role="tab" class="tab" id="tab-special" data-action="card-tab" data-id="special">Special <span class="count" id="count-special"></span></button>
+          <button type="button" role="tab" class="tab" id="tab-fires" data-action="card-tab" data-id="fires">Fires <span class="count" id="count-fires"></span></button>
+        </div>
+        <div class="set-filter">
+          <span class="label">From</span>
+          <div id="set-filter" class="chips"></div>
+        </div>
+      </div>
+      <div class="hint-row">
+        <p id="card-hint" class="hint"></p>
+        <button type="button" class="btn small-btn" id="expand-all" data-action="expand-all">Expand all</button>
+      </div>
+      <div id="card-list" class="card-grid"></div>
+    </section>
+  </div>
+
+  <aside class="summary" id="summary" aria-labelledby="h-summary">
+    <div class="sheet">
+      <div class="sheet-head">
+        <span class="sheet-kicker">Force tasking</span>
+        <span class="dtg" id="dtg"></span>
+      </div>
+      <h2 class="sheet-title" id="h-summary">Untitled roster</h2>
+      <p class="sheet-meta" id="sheet-meta"></p>
+
+      <div id="budgets" class="budgets"></div>
+
+      <ul class="issues" id="issues"></ul>
+
+      <div id="sheet-units"></div>
+
+      <h3 class="sheet-h">Intervention</h3>
+      <ul class="sheet-list" id="sheet-intervention"></ul>
+
+      <div id="sheet-special-wrap" hidden>
+        <h3 class="sheet-h">Special Intervention</h3>
+        <ul class="sheet-list" id="sheet-special"></ul>
+      </div>
+
+      <h3 class="sheet-h">Fires</h3>
+      <ul class="sheet-list" id="sheet-fires"></ul>
+
+      <div class="sheet-actions no-print">
+        <button type="button" class="btn" data-action="copy-text">Copy as text</button>
+        <button type="button" class="btn" data-action="copy-code">Copy roster code</button>
+        <button type="button" class="btn" data-action="toggle-import">Paste code</button>
+        <button type="button" class="btn" data-action="share-link" data-standalone>Copy share link</button>
+        <button type="button" class="btn" data-action="export-json" data-standalone>Export file</button>
+        <label class="btn" for="import-file" data-standalone>Import file<input id="import-file" type="file" accept="application/json,.json" class="sr-only"></label>
+        <button type="button" class="btn" data-action="print" data-standalone>Print</button>
+      </div>
+      <div class="import-box no-print" id="import-box" hidden>
+        <label for="import-code" class="label">Paste a roster code</label>
+        <textarea id="import-code" rows="3" spellcheck="false" placeholder="BPRE1.eyJ2Ijo..."></textarea>
+        <div class="import-actions">
+          <button type="button" class="btn primary" data-action="load-code">Load roster</button>
+          <button type="button" class="btn" data-action="toggle-import">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<button type="button" class="mobile-bar no-print" data-action="jump-summary" id="mobile-bar">
+  <span class="mono"><span id="mb-used">0</span> / <span id="mb-limit">0</span> CP</span>
+  <span id="mb-status"></span>
+</button>
+
+<footer class="footer">
+  <p>Community tool for the Black Powder Red Earth Patreon, made with permission from Echelon Software. Black Powder Red Earth and all related names belong to Echelon Software. You need the rulebooks to play.</p>
+  <p id="footer-links"></p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-msg"></span>
+  <button type="button" class="toast-btn" id="toast-undo" data-action="undo" hidden>Undo</button>
+</div>
+
+<script src="data/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
