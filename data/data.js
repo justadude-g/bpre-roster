@@ -13,7 +13,7 @@
  * rules text from the books or cards into this file.
  */
 window.BPRE_DATA = {
-  version: "0.7.0",
+  version: "0.7.1",
   pointsLabel: "CP",
   // Set this to your GitHub repo URL so the app can link to issues.
   repoUrl: "https://github.com/justadude-g/bpre-roster",
@@ -106,31 +106,31 @@ window.BPRE_DATA = {
   factions: [
     {
       id: "cts", name: "Crisis Troop Scorch", subtitle: "Cold Harbor contractors", bloc: "Cold Harbor bloc", allies: ["nitto"],
-      emblem: "assets/factions/cts.jpg",
+      emblem: "assets/factions/cts.png",
       tagline: "Western special operations contractors",
       lore: "Cold Harbor's contract kill teams, forward deployed from combat outposts Torch and White Birch either side of Jadid. Special Purpose Force 6 embeds with client forces inside the city, advising on internal defence and running protection details for ministry officials. Night raids, dead checks, no prisoners."
     },
     {
       id: "nitto", name: "00 Unit Nitto", subtitle: "Awbari Border Protection", bloc: "Cold Harbor bloc", allies: ["cts"],
-      emblem: "assets/factions/nitto.jpg",
+      emblem: "assets/factions/nitto.png",
       tagline: "State strike unit, indiscriminate and extrajudicial",
       lore: "A national strike unit answering to the Awbari National Directorate of Intelligence, built to pursue and interdict extremists crossing from Qasra. It opened its account in 2025 at the Awbari holding centre, where rather than retake a compound full of dead hostages the team leader dropped it with thermobaric UAS."
     },
     {
       id: "hongbin", name: "Hongbin", subtitle: "Kinetic Forces / Alloy Security", bloc: "Hongbin bloc", allies: ["aayari", "spear"],
-      emblem: "assets/factions/hongbin.jpg",
+      emblem: "assets/factions/hongbin.png",
       tagline: "Corporate mercenaries, in it for the margin",
       lore: "Officially protection officers guarding company sites and assets. In practice a battalion of PLAN marine veterans and North Korean special operations personnel, leased to Chinese foreign intelligence, running a ground force of Syrian mercenaries. Calculating, profitable, and content to spend proxy lives to protect its own."
     },
     {
       id: "aayari", name: "Aayari Network", subtitle: "The Aayar Guard", bloc: "Hongbin bloc", allies: ["hongbin"],
-      emblem: "assets/factions/aayari.jpg",
+      emblem: "assets/factions/aayari.png",
       tagline: "Jihadist network fighting as Hongbin's proxy",
       lore: "Drawn from the secret police and republican guards of the pre-Arab Spring order, the Network supplies Hongbin with bodies. Muhtasib sappers storm positions and detonate their vests on the survivors; Shurta screen the advance and are spent freely. Hongbin sends them into close combat with Scorch teams and shoots from cover behind them."
     },
     {
       id: "spear", name: "SPEAR Brigade", subtitle: "Qasran special mission unit", bloc: "Hongbin bloc", allies: ["hongbin"],
-      emblem: "assets/factions/spear.jpg",
+      emblem: "assets/factions/spear.png",
       tagline: "Qasran marauders with electronic warfare",
       lore: "Recruited only from commandos and special forces and built as infiltration marauders. Backpack cognitive jammers classify enemy emitters on the fly and can hijack a remote pilot's signal outright, blinding opposing drones. SPEAR isolates an area, works it over with kinetic UAS swarms, then walks a kill team onto the objective.",
       note: "SPEAR and the Aayari Network never share a battlespace. If one earns reinforcements, the other can only come on once the first is wiped out."

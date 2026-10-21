@@ -4,6 +4,14 @@ All game data is in `data/data.js`. Edit it in any text editor, or on GitHub wit
 
 Before you open a pull request, run `node tools/validate-data.mjs`. It must print `Data OK.`
 
+To preview changes, serve the folder rather than double-clicking `index.html`. Browsers won't draw the faction emblems from a page opened straight from disk:
+
+```sh
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000. The offline file in `dist/` works either way.
+
 ## Ground rules
 
 - Include the source: book and page number, or card name and set.
@@ -34,7 +42,7 @@ The top-level `qrf` object sets the QRF discount and minimum cost.
 | `bloc` | Cold Harbor bloc or Hongbin bloc. Used to group the faction buttons |
 | `allies` | Factions that can field alongside this one. A force is one faction plus at most one ally |
 | `note` | Optional restriction shown to the player |
-| `emblem` | Square image in `assets/factions/`, about 192 px |
+| `emblem` | Square transparent PNG in `assets/factions/`. Only its shape is used; the app draws it in the text colour |
 | `tagline`, `lore` | Shown on the Factions page |
 
 The top-level `incompatible` list holds faction pairs that can never be in one force, such as `["spear", "aayari"]`. It overrides `allies`.

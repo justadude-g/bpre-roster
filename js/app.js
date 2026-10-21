@@ -27,7 +27,8 @@
   function emblem(fid, cls) {
     var f = FACTIONS[fid];
     if (!f || !f.emblem) return '';
-    return '<img class="emblem ' + (cls || '') + '" src="' + esc(f.emblem) + '" alt="" loading="lazy" decoding="async">';
+    var u = 'url(\'' + esc(f.emblem) + '\')';
+    return '<span class="emblem ' + (cls || '') + '" style="-webkit-mask-image:' + u + ';mask-image:' + u + '" aria-hidden="true"></span>';
   }
   var SETS = index(D.sets);
   var MODES = index(D.modes);

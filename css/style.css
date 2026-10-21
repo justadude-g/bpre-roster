@@ -519,7 +519,13 @@ button, input, textarea { font: inherit; color: inherit; }
 @media (max-width: 640px) { .game-card.text-open { grid-column: 1 / -1; } }
 
 /* ---------- v0.7: emblems, section tabs, reference pages ---------- */
-.emblem { display: inline-block; object-fit: cover; border-radius: 6px; flex: none; background: var(--surface-2); vertical-align: middle; }
+.emblem {
+  display: inline-block; flex: none; vertical-align: middle;
+  background-color: currentColor;
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
 .emblem-xs { width: 18px; height: 18px; border-radius: 3px; margin-right: 6px; vertical-align: -4px; }
 .emblem-sm { width: 26px; height: 26px; border-radius: 4px; }
 .emblem-lg { width: 46px; height: 46px; }
@@ -528,7 +534,7 @@ button, input, textarea { font: inherit; color: inherit; }
 
 .faction-card.has-emblem { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 12px; }
 .faction-text { display: grid; gap: 2px; min-width: 0; }
-.faction-card[disabled] .emblem { filter: grayscale(1); }
+
 .chip-emblem { display: inline-flex; align-items: center; }
 .chip.static { cursor: default; }
 .unit-group h3 { display: flex; align-items: center; }
